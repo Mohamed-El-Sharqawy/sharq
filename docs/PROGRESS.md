@@ -4,16 +4,19 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Current position
 
-- **Phase:** 0 — Monorepo, design system & test infrastructure — **all 14 rows done, phase in review**
-- **Status:** rows 1–14 complete. PR #1 (rows 1–7) merged 2026-10-18; **PR #2** (`phase/0-foundation` → `main`, rows 8–14) flipped **ready** this session after rows 13 (visual baselines) and 14 (reworded, client-approved) closed — awaiting client review + merge. Phase DoD met: `pnpm test` green across runners; CI enforces lint + line-count + unit + build + e2e; `/demo` renders RTL-correct with the Arabic font; e2e incl. visual baselines + axe runs in CI.
+- **Phase:** 1 — Data model & auth (goal: schema with all history-safety constraints + working sessions + the layered module pattern proven)
+- **Status:** «**Phase 0 complete (2026-10-18)**» — PR #2 merged 12:10 UTC (merge commit `92d5972`), tagged `phase-0` + release published; `phase/1-data-auth` cut from fresh main; **draft PR #3** opened (open-early pattern). Phase 1 starts at row 1 (0/13 rows).
 
 ## Next task
 
-- **Attend PR #2** (open, ready for review): address feedback on `phase/0-foundation` only; never start Phase 1 before it merges.
-- **On merge:** record «Phase 0 complete (date)» in Status above; tag + release (`git tag phase-0; git push --tags`; `gh release create phase-0 --generate-notes`); cut `phase/1-data-auth` from fresh `main` (`git fetch; git switch main; git pull; git switch -c phase/1-data-auth`); then Phase 1, row 1:
-  - [ ] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
+- [ ] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
+  - Read SPEC §5.2 (settings registry keys, §5.3 seeded values) + TESTING §6.2 before writing. bun:test specs in `packages/schemas`, titles named after FR-SET-* ids, red first (registry exports don't exist yet). When the real exports land, delete `@sharq/schemas`' TEMP `runnerInfo` + its hello spec (grep `TEMP hello-wiring`).
 
 ## Session log (newest first)
+
+### 2026-10-18 — PR #2 merged: Phase 0 closed, tag + release, phase/1 branch + draft PR #3
+- Client merged PR #2 (12:10:15Z, merge commit `92d5972`). Post-merge bookkeeping per Branch & PR workflow: main fast-forwarded; `phase-0` tag pushed on the merge commit; GitHub release `phase-0` published (notes = ROADMAP-verbatim 14-row ticked checklist + gate evidence, generated + uploaded via Node-written UTF-8 files — no PS pipelines); `phase/1-data-auth` cut from fresh main; draft PR #3 opened with the 13-row Phase 1 checklist (open-early pattern). Ledger position/next-task updated for Phase 1 row 1. En-route lesson: extract ROADMAP rows programmatically with CRLF normalized (`replace(/\r\n/g, "\n")`) — literal `\n---\n` never matches a CRLF checkout.
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — Phase 0 task 13 (row 13): visual baselines + snapshot policy; row 14 closed; PR #2 ready
 - **Row 13 (red, `5520428`):** `apps/web/e2e/visual.spec.ts` — `/demo` full-page `toHaveScreenshot()` per project (desktop-RTL + mobile), waiting for hydration (`.vt-page-root`) + `document.fonts.ready` so the golden never bakes the fallback font. Policy set once in `playwright.config.ts` (`expect.toHaveScreenshot`: `fullPage`, `animations:"disabled"` — freezes the §9.9 skeleton `animate-pulse` — `maxDiffPixels: 500`); Playwright auto-suffixes goldens with project+platform (`…-desktop-RTL-linux.png` vs `…-win32.png`) so each OS compares against its own rendering. Red proven locally: both specs fail "A snapshot doesn't exist … writing actual" — goldens written, deliberately uncommitted.
