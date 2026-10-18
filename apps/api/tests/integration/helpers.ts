@@ -18,8 +18,13 @@ export type TestDb = {
 
 export async function startTestDb(): Promise<TestDb> {
   const container = await new PostgreSqlContainer("postgres:18-alpine").start();
+  // drizzle(client) swaps the client's date/time parsers for identity
+  // functions (it maps dates per column itself) — a mutation on the SHARED
+  // client options. The raw handle therefore gets its own pristine client so
+  // raw SQL assertions keep postgres.js semantics (timestamptz → Date).
+  const drizzleClient = postgres(container.getConnectionUri());
   const query = postgres(container.getConnectionUri());
-  const db = drizzle(query, { schema });
+  const db = drizzle(drizzleClient, { schema });
   await runMigrations(db);
   return {
     db,
@@ -27,6 +32,7 @@ export async function startTestDb(): Promise<TestDb> {
     url: container.getConnectionUri(),
     stop: async () => {
       await query.end();
+      await drizzleClient.end();
       await container.stop();
     },
   };
