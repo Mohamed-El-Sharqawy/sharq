@@ -13,8 +13,7 @@ test.describe("hello e2e scaffold", () => {
   }) => {
     await browser.setContent(page('<h1 id="mark">شرق</h1>'));
     await expect(browser.locator("html")).toHaveAttribute("dir", "rtl");
-    // TEMP CI failure-path proof (reverted immediately): deliberately wrong text.
-    await expect(browser.locator("#mark")).toHaveText("فشل مقصود");
+    await expect(browser.locator("#mark")).toHaveText("شرق");
   });
 
   test("axe scan reports zero critical violations", async ({
