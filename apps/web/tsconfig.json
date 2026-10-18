@@ -1,5 +1,14 @@
 {
   "extends": "@sharq/tsconfig/app.json",
+  "compilerOptions": {
+    "paths": {
+      // app-local aliases (shadcn "components"/"lib"/"hooks" aliases).
+      "@/*": ["./app/*"],
+      // @sharq/ui sources — lets the shadcn CLI (and editors) route
+      // component files into packages/ui (SPEC §14.1/§14.4).
+      "@sharq/ui/*": ["../../packages/ui/src/*"]
+    }
+  },
   "include": [
     "app",
     "e2e",

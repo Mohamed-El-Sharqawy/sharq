@@ -17,6 +17,13 @@ describe("SPEC §11 · routing skeleton", () => {
     );
   });
 
+  // @sharq/ui pipeline proof: the shadcn Button resolves through the
+  // @sharq/ui/* alias and renders with its token classes.
+  it("dashboard placeholder renders a shadcn button", () => {
+    render(<Dashboard />);
+    expect(screen.getByRole("button")).toHaveAttribute("data-slot", "button");
+  });
+
   it("catch-all renders the Arabic 404 page with a way back", () => {
     render(
       <MemoryRouter>

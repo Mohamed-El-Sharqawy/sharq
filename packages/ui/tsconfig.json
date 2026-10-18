@@ -2,7 +2,12 @@
   "extends": "@sharq/tsconfig/pkg.json",
   "compilerOptions": {
     "lib": ["es2024", "dom", "dom.iterable"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      // Self-alias so generated shadcn components can import
+      // `@sharq/ui/lib/utils` etc. inside the package (SPEC §14.1).
+      "@sharq/ui/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }
