@@ -21,6 +21,7 @@
         "vite.config.ts",
         "vitest.config.ts",
         "playwright.config.ts",
+        "drizzle.config.ts",
         "../../packages/eslint-config/index.js",
         "../../packages/eslint-config/package.json"
       ]
@@ -37,6 +38,7 @@
         "vite.config.ts",
         "vitest.config.ts",
         "playwright.config.ts",
+        "drizzle.config.ts",
         "../../packages/tsconfig/*.json"
       ]
     },

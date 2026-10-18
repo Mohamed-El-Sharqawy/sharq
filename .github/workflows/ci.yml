@@ -39,9 +39,11 @@ jobs:
 
       # bun:test runs the unit specs of packages/* + apps/api (TESTING §2.1);
       # pinned to the host dev version to keep runtimes identical.
+      # 1.4.3 (2026-10-18): Testcontainers on Windows dev hosts needs named-pipe
+      # http + dockerode streaming, both broken in 1.2.21.
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.21
+          bun-version: 1.4.3
 
       # Turbo local cache (hit-once per commit, prefix-restored across PRs).
       - name: Turbo cache

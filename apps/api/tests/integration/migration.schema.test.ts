@@ -38,9 +38,9 @@ const SPEC_7_TABLES = [
 
 describe("SPEC §7 · migration inventory", () => {
   it("creates every table the SPEC §7 data model names", async () => {
-    const rows = await t.query<{
-      table_name: string;
-    }>`select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE'`;
+    const rows = await t.query<
+      { table_name: string }[]
+    >`select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE'`;
     const present = new Set(rows.map((r) => r.table_name));
     for (const name of SPEC_7_TABLES) {
       expect(present.has(name), `table ${name} should exist`).toBe(true);

@@ -38,12 +38,16 @@ export const PG_UNIQUE_VIOLATION = "23505";
 export const PG_INSUFFICIENT_PRIVILEGE = "42501";
 
 // Awaits a statement that must be rejected; returns its Postgres error code.
+// Drizzle wraps driver errors in DrizzleQueryError, so the PG code can sit on
+// any link of the cause chain.
 export async function errorCode(promise: Promise<unknown>): Promise<string> {
   try {
     await promise;
   } catch (error) {
-    const code = (error as { code?: unknown }).code;
-    if (typeof code === "string") return code;
+    for (let e = error; e; e = (e as { cause?: unknown }).cause) {
+      const code = (e as { code?: unknown }).code;
+      if (typeof code === "string") return code;
+    }
     throw error;
   }
   throw new Error("expected the statement to be rejected, but it succeeded");
