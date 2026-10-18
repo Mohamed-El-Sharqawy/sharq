@@ -6,6 +6,10 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p ."
+  },
   "dependencies": {
     "@sharq/locales": "workspace:*",
     "@sharq/schemas": "workspace:*"
@@ -15,6 +19,9 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@sharq/eslint-config": "workspace:*",
+    "@sharq/tsconfig": "workspace:*",
+    "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "typescript": "catalog:"

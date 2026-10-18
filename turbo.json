@@ -10,9 +10,21 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**"]
     },
-    "lint": {},
+    "lint": {
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "eslint.config.js",
+        "../../packages/eslint-config/index.js",
+        "../../packages/eslint-config/package.json"
+      ]
+    },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck"],
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "tsconfig.json",
+        "../../packages/tsconfig/*.json"
+      ]
     },
     "test": {},
     "line-count": {

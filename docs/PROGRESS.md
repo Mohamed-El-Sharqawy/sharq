@@ -5,13 +5,19 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** task 1/13 done — monorepo skeleton green (pnpm workspaces + `catalog:` + Turborepo + all 6 `@sharq/*` packages with §8.2 edges); no runners/config wired yet.
+- **Status:** tasks 1–2/13 done — monorepo skeleton green; `@sharq/tsconfig` bases (base/pkg/app) + `@sharq/eslint-config` flat config live, all §9.2/9.3 thresholds + §8.2 zones + §9.1 bans red-test-proven.
 
 ## Next task
 
-- [ ] CHORE: shared tsconfig bases + ESLint flat config with import zones, 150-line rule, complexity thresholds (SPEC §9.2/9.3)
+- [ ] CHORE: `tooling/check-line-count.mjs` + `.linecount-exemptions.json` + turbo `line-count` task (SPEC §9.2)
 
 ## Session log (newest first)
+
+### 2026-10-18 — Phase 0 task 2: tsconfig bases + ESLint flat config
+- `@sharq/tsconfig`: `base.json` (strict, `module: preserve`, `moduleResolution: bundler`, `verbatimModuleSyntax`, `noEmit`) + `pkg.json` + `app.json` (DOM + `react-jsx`); wired as devDep + `tsconfig.json` + `typecheck` script in schemas/payroll/locales/ui (ui adds DOM lib + jsx).
+- `@sharq/eslint-config` (flat, ESLint 10): §9.3 thresholds verbatim (max-lines 150, max-lines-per-function 60, complexity 10, max-params 4, max-depth 3, react-hooks/exhaustive-deps error, import/order warn), §9.1 bans (drizzle/bun imports + `fetch` global outside sanctioned contexts), `packageZones()` enforcing §8.2 downward-only edges via `import/no-restricted-paths` (plain dir paths — glob zones break on Windows minimatch; zone `target`=importer, `from`=banned source). Per-package `eslint.config.js` + `lint` script. `eslint` added to catalog; turbo `lint`/`typecheck` tasks got explicit `inputs` hashing the shared config packages (consumer caches were blind to config changes); `.prettierignore` protects client docs from `format`.
+- Red-test proven: zones (schemas→locales import), fetch ban, and max-lines all fire on deliberate violations; removed after. Unresolved-import violations fall to typecheck (zones only see resolvable imports) — layered coverage as designed.
+- CHORE only — no FR/EC ids. Committed as `phase 0: tsconfig bases + eslint flat config, zones proven (CHORE)`.
 
 ### 2026-10-18 — Phase 0 task 1: monorepo skeleton
 - Cut `phase/0-foundation` from fresh `main`. Added root `package.json` (turbo 2.11.9, prettier 3.9.10, §8.4 scripts minus `db:*`/`seed` which need apps), `pnpm-workspace.yaml` with the `catalog:` block (react 19.3.1, typescript 7.0.2, typebox 0.34.52, tailwindcss 4.3.3, tanstack table/query/virtual, date-fns 4.4.0, i18next 26.5.2, react-i18next 17.1.0), `turbo.json` (tasks: dev/build/lint/typecheck/test/line-count/e2e per §8.4), and the six `@sharq/*` packages with placeholder `src/index.ts` and §8.2 dependency edges (ui→schemas+locales, payroll→schemas, locales→schemas, schemas→typebox).
@@ -35,7 +41,8 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Decisions & deviations
 
-- None yet. Rule: any deviation updates SPEC.md first, in the same session it happens.
+- **ESLint 10 option spelling (2026-10-18, task 2):** SPEC §9.2 `max-lines` options updated from `ignoreBlankLines/ignoreComments` to `skipBlankLines/skipComments` — ESLint 10 renamed them, semantics identical. SPEC edited in the same session; threshold value (150, non-blank, non-comment) unchanged.
+- **TypeScript pinned 6.0.3, not 7.0.2 (2026-10-18, task 2):** typescript-eslint 8.71 hard-refuses TS 7 (native rewrite, unsupported until typescript-eslint#10940 lands). 6.0.3 is the newest line inside its peer range; single catalog line to bump later.
 
 ## Environment notes
 
@@ -43,7 +50,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
 - Remote: https://github.com/Mohamed-El-Sharqawy/sharq (**public**). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
 - Do not attempt to read `color direction - image examle.jpg` (no vision support).
-- TypeScript pinned at **7.0.2** (the Go-native line; 5.x is EOL — dist-tags show 6.0-beta → 7.0.2 latest). If TS7 config incompatibility appears in task 2, bump within `pnpm-workspace.yaml` catalog (one line).
+- TypeScript pinned at **6.0.3** in the catalog (was briefly 7.0.2; see Decisions). Revisit when typescript-eslint supports TS ≥7.1.
 - pnpm 10.15.1 pinned via `packageManager` (12.x is available; upgrade is a deliberate future decision, not a drive-by).
 
 ## Blockers

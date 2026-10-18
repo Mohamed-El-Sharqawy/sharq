@@ -1,0 +1,4 @@
+{
+  "extends": "@sharq/tsconfig/pkg.json",
+  "include": ["src"]
+}

@@ -506,7 +506,7 @@ sharq/
 ### 9.2 The 150-line limit & how to split
 
 - **Rule:** no source file exceeds **150 non-blank, non-comment lines**.
-- **Enforcement (dual):** ESLint `max-lines: ['error', {max: 150, ignoreBlankLines: true, ignoreComments: true}]` in `@sharq/eslint-config` **and** `tooling/check-line-count.mjs` in the `line-count` turbo task + CI (counts exactly per definition; validates the exemption list). Both fail the build.
+- **Enforcement (dual):** ESLint `max-lines: ['error', {max: 150, skipBlankLines: true, skipComments: true}]` (ESLint 10 option spelling; same semantics as the former `ignore*`) in `@sharq/eslint-config` **and** `tooling/check-line-count.mjs` in the `line-count` turbo task + CI (counts exactly per definition; validates the exemption list). Both fail the build.
 - **Exemptions:** `.linecount-exemptions.json` — generated files only (initially `packages/ui/src/components/ui/*` from the shadcn CLI), each with reason + review date. Hand-written code is never exempt; RTL patches wrap shadcn files in new small files instead of editing them in place.
 - **Split decision guide:** logic with data → **hook** (`useX.ts`); state machine → **reducer** (`*.reducer.ts`); JSX chunk → **sub-component**; input/output contract → **schema** (in `@sharq/schemas` if both sides need it); reusable value → **constant** (`*.constants.ts` — no magic numbers); pure transform → **util**; types → `*.types.ts`.
 

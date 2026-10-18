@@ -6,5 +6,19 @@
   "main": "index.js",
   "files": [
     "index.js"
-  ]
+  ],
+  "dependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "typescript-eslint": "8.71.2"
+  },
+  "peerDependencies": {
+    "eslint": ">=10"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
 }

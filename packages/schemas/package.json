@@ -6,10 +6,17 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p ."
+  },
   "dependencies": {
     "@sinclair/typebox": "catalog:"
   },
   "devDependencies": {
+    "@sharq/eslint-config": "workspace:*",
+    "@sharq/tsconfig": "workspace:*",
+    "eslint": "catalog:",
     "typescript": "catalog:"
   }
 }

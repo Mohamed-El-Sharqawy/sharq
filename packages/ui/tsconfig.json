@@ -1,0 +1,8 @@
+{
+  "extends": "@sharq/tsconfig/pkg.json",
+  "compilerOptions": {
+    "lib": ["es2024", "dom", "dom.iterable"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
+}
