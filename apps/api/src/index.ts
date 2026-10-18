@@ -1,7 +1,5 @@
 // apps/api — Bun + Elysia service (SPEC §8.1).
-// Bootstrap lands with Phase 1 (env validation, db connect, listen); this
-// placeholder only proves the workspace + runner wiring.
+// Bootstrap (env validation, db connect, listen) lands with the auth rows of
+// Phase 1; the first real resident is the db module under src/db (row 4).
 
-// TEMP hello-wiring export — proven by tests/hello.test.ts; deleted when Phase 1
-// lands the real bootstrap (tracked in PROGRESS).
-export const runnerInfo = "bun";
+export {};
