@@ -16,10 +16,9 @@ describe("SPEC §9.9 · EmptyState", () => {
   it("renders the screen-supplied Arabic message (SPEC §11 «مفيش فرق لسه»)", () => {
     render(<EmptyState message={EMPTY_DASHBOARD_TEAMS} />);
     expect(screen.getByText(EMPTY_DASHBOARD_TEAMS)).toBeVisible();
-    expect(screen.getByText(EMPTY_DASHBOARD_TEAMS).closest("[data-slot]")).toHaveAttribute(
-      "data-slot",
-      "empty-state",
-    );
+    expect(
+      screen.getByText(EMPTY_DASHBOARD_TEAMS).closest("[data-slot]"),
+    ).toHaveAttribute("data-slot", "empty-state");
   });
 });
 
@@ -29,7 +28,9 @@ describe("SPEC §9.9 · LoadingState", () => {
     const status = screen.getByRole("status");
     expect(status).toHaveAttribute("data-slot", "loading-state");
     expect(screen.getByText(LOADING_LABEL)).toBeInTheDocument();
-    expect(status.querySelectorAll("[data-slot='skeleton']").length).toBeGreaterThan(0);
+    expect(
+      status.querySelectorAll("[data-slot='skeleton']").length,
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -37,7 +38,9 @@ describe("SPEC §9.9 · ErrorState", () => {
   it("renders the Arabic error title + message and retries on demand", () => {
     const onRetry = vi.fn();
     render(<ErrorState onRetry={onRetry} />);
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(ERROR_TITLE);
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      ERROR_TITLE,
+    );
     expect(screen.getByText(ERROR_MESSAGE)).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: RETRY_ACTION }));
     expect(onRetry).toHaveBeenCalledTimes(1);
