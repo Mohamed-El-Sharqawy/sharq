@@ -8,7 +8,7 @@ function defaultValues(): Record<string, unknown> {
   );
 }
 
-describe("FR-SET-08 cross-field validation (TESTING §6.2)", () => {
+describe("FR-SET-08 cross-field validation — bounds rules (TESTING §6.2)", () => {
   test("empty update and full defaults produce no issues", () => {
     expect(validateSettingsCrossField({})).toEqual([]);
     expect(validateSettingsCrossField(defaultValues())).toEqual([]);
@@ -50,6 +50,16 @@ describe("FR-SET-08 cross-field validation (TESTING §6.2)", () => {
     ).toEqual([]);
   });
 
+  test("partial updates merge over seeded defaults before cross-checking", () => {
+    // Only min provided: compared against the DEFAULT max (500000), passes —
+    // and equal to the smallest seeded pick, so bounds still hold.
+    expect(
+      validateSettingsCrossField({ "attendance.amount.minMinor": 40000 }),
+    ).toEqual([]);
+  });
+});
+
+describe("FR-SET-08 cross-field validation — quick-picks rules (TESTING §6.2)", () => {
   test("quick-pick outside bounds is rejected (raised min)", () => {
     const issues = validateSettingsCrossField({
       "attendance.amount.minMinor": 50000,
@@ -83,13 +93,6 @@ describe("FR-SET-08 cross-field validation (TESTING §6.2)", () => {
       validateSettingsCrossField({
         "attendance.quickPicks": [1, 2, 3, 4, 5, 6, 7, 8],
       }),
-    ).toEqual([]);
-  });
-
-  test("partial updates merge over seeded defaults before cross-checking", () => {
-    // Only min provided: compared against the DEFAULT max (500000), passes.
-    expect(
-      validateSettingsCrossField({ "attendance.amount.minMinor": 499999 }),
     ).toEqual([]);
   });
 });

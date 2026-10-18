@@ -1,6 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { Value } from "@sinclair/typebox/value";
-import { SETTINGS_REGISTRY } from "../index";
+import { SETTINGS_REGISTRY, type SettingDefinition } from "../index";
+
+// Runtime lookup view: a missing key must FAIL these specs with a message,
+// not break compilation of the package.
+const byKey = Object.fromEntries(Object.entries(SETTINGS_REGISTRY)) as Record<
+  string,
+  SettingDefinition
+>;
 
 // SPEC §5.2 scalar registry keys, verbatim. The four table rows (pay_rates,
 // reason_catalog, attendance_statuses, holidays) are dedicated tables per
@@ -102,7 +109,8 @@ describe("FR-SET-01 settings registry completeness (TESTING §6.2)", () => {
 
   test("registry carries no keys beyond SPEC §5.2", () => {
     const extra = Object.keys(SETTINGS_REGISTRY).filter(
-      (k) => !SPEC_SETTING_KEYS.includes(k as (typeof SPEC_SETTING_KEYS)[number]),
+      (k) =>
+        !SPEC_SETTING_KEYS.includes(k as (typeof SPEC_SETTING_KEYS)[number]),
     );
     expect(extra, `unexpected registry keys: ${extra.join(", ")}`).toEqual([]);
   });
@@ -126,13 +134,10 @@ describe("FR-SET-01 settings registry completeness (TESTING §6.2)", () => {
   });
 
   test("null-seeded keys are the only null defaults and are explicit nulls", () => {
-    const nullKeys = SPEC_SETTING_KEYS.filter(
-      (k) => SPEC_DEFAULTS[k] === null,
-    );
+    const nullKeys = SPEC_SETTING_KEYS.filter((k) => SPEC_DEFAULTS[k] === null);
     for (const key of nullKeys) {
-      expect(SETTINGS_REGISTRY[key].seededDefault, `${key}: null default`).toBe(
-        null,
-      );
+      expect(byKey[key], `${key}: registry entry missing`).toBeDefined();
+      expect(byKey[key]!.seededDefault, `${key}: null default`).toBe(null);
     }
   });
 
@@ -147,8 +152,9 @@ describe("FR-SET-01 settings registry completeness (TESTING §6.2)", () => {
 
   test("seeded defaults match SPEC §5.2/§5.6 exactly", () => {
     for (const [key, expected] of Object.entries(SPEC_DEFAULTS)) {
+      expect(byKey[key], `${key}: registry entry missing`).toBeDefined();
       expect(
-        SETTINGS_REGISTRY[key].seededDefault,
+        byKey[key]!.seededDefault,
         `${key}: default must match SPEC`,
       ).toEqual(expected);
     }
