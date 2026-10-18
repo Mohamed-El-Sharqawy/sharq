@@ -1,4 +1,7 @@
 {
   "extends": "@sharq/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["@types/bun"]
+  },
   "include": ["src", "tests"]
 }

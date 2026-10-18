@@ -28,10 +28,10 @@ graph LR
 - [x] CHORE: Turborepo + pnpm workspaces + `catalog:`; packages `schemas/payroll/locales/ui/tsconfig/eslint-config` (SPEC §8.1)
 - [x] CHORE: shared tsconfig bases + ESLint flat config with import zones, 150-line rule, complexity thresholds (SPEC §9.2/9.3)
 - [x] CHORE: `tooling/check-line-count.mjs` + `.linecount-exemptions.json` + turbo `line-count` task (SPEC §9.2)
-- [ ] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)
+- [x] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)
 - [ ] CHORE: Playwright scaffold — chromium, desktop-RTL + mobile projects, trace viewer, axe addon (TESTING §2.1)
 - [ ] CHORE: CI pipeline skeleton running stages install→lint→line-count→typecheck→unit on every PR (TESTING §12)
-- [ ] TEST: hello unit test per runner (bun, vitest) proving red→green wiring — commit history shows red first
+- [x] TEST: hello unit test per runner (bun, vitest) proving red→green wiring — commit history shows red first
 - [ ] IMPL: Vite + React Router v7 framework mode (SPA) + fs-routes folder routing + `_app` layout + 404/error boundaries (SPEC §8.1, §11)
 - [ ] IMPL: Tailwind v4 tokens + shadcn init into `packages/ui`; RTL patch list applied (SPEC §14.1); self-hosted Arabic fonts (§14.2)
 - [ ] TEST: render tests for `EmptyState` / `LoadingState` / `ErrorState` incl. Arabic labels (SPEC §9.9)

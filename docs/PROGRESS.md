@@ -5,14 +5,21 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** tasks 1–3/13 done — monorepo skeleton, tsconfig bases + ESLint flat config, and the dual-enforced §9.2 line-count gate (script + exemptions + turbo task) all red-test-proven and green.
+- **Status:** tasks 1–5 of 13 done (rows 1,2,3,4,7) — both test runners live and red→green proven: bun:test in schemas/payroll/locales/api, Vitest 5 + jsdom + Testing Library in web; app skeletons in place. Full `turbo run lint typecheck test line-count build` 24/24 green.
 
 ## Next task
 
-- [ ] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)
-  - Note: `apps/api` and `apps/web` don't exist yet — create their skeletons (§8.1 tree) as part of this task; the hello-test task two rows down then proves each runner red→green.
+- [ ] CHORE: Playwright scaffold — chromium, desktop-RTL + mobile projects, trace viewer, axe addon (TESTING §2.1)
+  - Lands in `apps/web/e2e/` (dir exists); decide `@playwright/test` version + `playwright.config.ts` projects (`desktop-RTL` viewport `1280x720` + `mobile` per TESTING §2.1/§9); axe via `@axe-core/playwright`; wire `apps/web` `e2e` script + root `pnpm e2e` (turbo task exists, `cache:false`).
 
 ## Session log (newest first)
+
+### 2026-10-18 — Phase 0 tasks 4+7 (rows 4 & 7): test runners + hello specs red→green
+- Commit 1 (CHORE, green): `apps/api` skeleton (§8.1: src/index, src/app, db/plugins/modules/lib, tests; dev/build/lint/typecheck/line-count scripts, `bun build --target=bun` verified) + `apps/web` skeleton (app/routes, features, lib, styles, test, e2e; vitest.config.ts + setup.ts with explicit RTL cleanup — globals off; lint/typecheck/line-count). Catalog grew: @types/bun 1.2.23 (matches host bun 1.2.21 line), @types/node 24.19.2, @types/react(-dom) 19.3.0, @testing-library/{react 16.3.3, dom 10.4.2, jest-dom 7.0.1}, jsdom 30.1.3, vite 7.3.7, vitest 5.0.5 (vite is a required vitest peer; 7.x picked as the RRv7-compat-safe line). turbo lint/typecheck inputs broadened for `app/**`, `tests/**`, `e2e/**`, `vitest.config.ts`.
+- Commit 2 (test: red): `test` scripts land WITH the hello specs so no commit is red-on-empty (bun test exits 1 with zero test files): schemas/payroll/locales/api assert a not-yet-existing `runnerInfo` export (clean-compile cast → pure assertion red: Expected "bun"/Received undefined); web imports a missing `./hello` (vitest resolve error). All 5 tasks red for the designed reasons, verified individually.
+- Commit 3 (test: green): one-line TEMP `runnerInfo = "bun"` exports + `apps/web/app/hello.tsx` (`<div>شرق</div>`; jest-dom `toBeInTheDocument` proves setup). Full gate `turbo run lint typecheck test line-count build --force`: 24/24 green; prettier clean; `pnpm test` 5/5.
+- Fixes en route: TS 6.0.3 did not auto-include `@types/bun` for `bun:test` ambient modules → explicit `"types": ["@types/bun"]` in schemas/payroll/locales/api tsconfigs (Bun's documented snippet).
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — Phase 0 task 3: line-count gate (script + exemptions + turbo task)
 - `tooling/check-line-count.mjs` (Node, ~190 lines): counts non-blank/non-comment lines per SPEC §9.2 exactly — comment trivia comes from the TypeScript scanner (root devDep `typescript: catalog:`), so `//` in strings/URLs/templates is never a comment; code lines with trailing comments count; pure-comment and blank lines don't; CRLF + BOM safe. Scans the invoking workspace (cwd) recursively for `.ts/.tsx` (skips node_modules/dist/coverage/.turbo/.git), reports repo-relative paths.
@@ -48,6 +55,11 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 - Initialized git + `.gitignore`; committed the documentation baseline (closing ritual step 3).
 
 ## Decisions & deviations
+
+- **TEMP hello-wiring artifacts, removal duty tracked (2026-10-18, tasks 4+7):** `runnerInfo` exports in schemas/locales/api/payroll `src/index.ts` + `apps/web/app/hello.tsx` + the five `hello.test.*` files are wiring proofs only. Delete when real exports/screens land (schemas+locales+api: Phase 1; payroll: Phase 3; web hello: the Vite+RR task). Grep `TEMP hello-wiring`.
+- **`bun:test` types need an explicit `"types": ["@types/bun"]` (2026-10-18, task 4):** TS 6.0.3 did not auto-include the ambient `declare module "bun:test"` from bun-types via @types auto-inclusion under pnpm; Bun's documented snippet fixes it. Side effect: Bun globals typecheck inside packages — the §9.1 ESLint import bans (`bun`, `drizzle-orm`) remain the guard on src.
+- **`packages/ui` test wiring deferred to the shadcn task (2026-10-18, task 4):** roadmap said "bun:test in packages/*", but TESTING §2.1 (the binding authority) scopes bun:test to schemas/payroll/locales/api; ui's destiny is component tests (Vitest+RTL, same stack as web — decide runner location when shadcn lands, row 9's render tests).
+- **Test scripts land together with their first tests (2026-10-18, task 4):** `bun test` exits 1 on zero test files (vitest too), so a `test` script without tests breaks `turbo test`. Convention: a package gains its `test` script in the same (red) commit as its first spec.
 
 - **Expired exemption review dates fail the gate (2026-10-18, task 3):** SPEC §9.2 requires "reason + review date" per entry but doesn't state expiry behavior; the script treats `reviewDate < today` as an error (review → renew or remove). This is the anti-erosion teeth SPEC §18 risk table implies; interpretation logged here, SPEC text unchanged.
 - **ESLint 10 option spelling (2026-10-18, task 2):** SPEC §9.2 `max-lines` options updated from `ignoreBlankLines/ignoreComments` to `skipBlankLines/skipComments` — ESLint 10 renamed them, semantics identical. SPEC edited in the same session; threshold value (150, non-blank, non-comment) unchanged.
