@@ -16,6 +16,11 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Session log (newest first)
 
+### 2026-10-18 — PR #1 review feedback addressed
+- Client comment: "looks good to me. i noticed that the unfinished tasks are 6 not 7. not matching roadmap." Correct — the **PR body** checklist had condensed two ROADMAP rows (render tests + components green) into one line and dropped the done "hello unit test per runner" row (6/6 instead of 7/7). ROADMAP and PROGRESS were already consistent (7/14 done); drift existed only in the PR description.
+- Fixed: PR #1 body now mirrors ROADMAP Phase 0 exactly — all 14 rows, 7 `[x]` / 7 `[ ]`, with SPEC ids per row. Replied on the PR (issuecomment-6248595635). Convention going forward: the PR checklist is generated from ROADMAP rows verbatim, never summarized.
+- CHORE only — no FR/EC ids.
+
 ### 2026-10-18 — main branch protected
 - Classic branch protection applied to `main` via API: PR required before merging, **strict** required status checks = both CI jobs (`install -> lint -> line-count -> typecheck -> unit` + `e2e: Playwright chromium`, matched against the real check-run names on PR #1), `enforce_admins` on, force pushes and deletions blocked, no push restrictions.
 - Deliberate: **0 required approving reviews** — single-account repo; PRs are authored by the client's own account and GitHub bars self-approval, so a 1-review requirement would deadlock every merge. The human review step stays procedural per the Branch & PR workflow; CI is the enforced gate.
