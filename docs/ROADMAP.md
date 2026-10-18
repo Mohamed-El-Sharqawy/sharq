@@ -36,7 +36,7 @@ graph LR
 - [x] IMPL: Tailwind v4 tokens + shadcn init into `packages/ui`; RTL patch list applied (SPEC §14.1); self-hosted Arabic fonts (§14.2)
 - [x] TEST: render tests for `EmptyState` / `LoadingState` / `ErrorState` incl. Arabic labels (SPEC §9.9)
 - [x] IMPL: those three shared components green
-- [ ] IMPL: view transitions + `prefers-reduced-motion` handling (SPEC §14.3)
+- [x] IMPL: view transitions + `prefers-reduced-motion` handling (SPEC §14.3)
 - [ ] TEST: visual baseline of the RTL demo page (desktop + mobile) (TESTING §9)
 - [ ] CHORE: root scripts (`dev/build/lint/typecheck/test/e2e/line-count/format/db:*/seed`) (SPEC §8.4)
 
