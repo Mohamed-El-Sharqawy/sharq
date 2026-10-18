@@ -13,7 +13,11 @@
     "lint": {
       "inputs": [
         "src/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx}",
+        "tests/**/*.ts",
+        "e2e/**/*.{ts,tsx}",
         "eslint.config.js",
+        "vitest.config.ts",
         "../../packages/eslint-config/index.js",
         "../../packages/eslint-config/package.json"
       ]
@@ -22,6 +26,8 @@
       "dependsOn": ["^typecheck"],
       "inputs": [
         "src/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx}",
+        "tests/**/*.ts",
         "tsconfig.json",
         "../../packages/tsconfig/*.json"
       ]
