@@ -25,7 +25,7 @@ graph LR
 
 **Goal:** every guardrail and every test runner live before the first feature line; CI proves itself with a hello-test.
 
-- [ ] CHORE: Turborepo + pnpm workspaces + `catalog:`; packages `schemas/payroll/locales/ui/tsconfig/eslint-config` (SPEC §8.1)
+- [x] CHORE: Turborepo + pnpm workspaces + `catalog:`; packages `schemas/payroll/locales/ui/tsconfig/eslint-config` (SPEC §8.1)
 - [ ] CHORE: shared tsconfig bases + ESLint flat config with import zones, 150-line rule, complexity thresholds (SPEC §9.2/9.3)
 - [ ] CHORE: `tooling/check-line-count.mjs` + `.linecount-exemptions.json` + turbo `line-count` task (SPEC §9.2)
 - [ ] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)

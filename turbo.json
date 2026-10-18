@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "lint": {},
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {},
+    "line-count": {
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "../../tooling/check-line-count.mjs",
+        "../../.linecount-exemptions.json"
+      ]
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,18 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Single version source for shared dependencies (SPEC §8.4).
+# Packages reference these as "catalog:" — never pin a shared version twice.
+catalog:
+  "@sinclair/typebox": "0.34.52"
+  "@tanstack/react-query": "5.104.4"
+  "@tanstack/react-table": "9.3.1"
+  "@tanstack/react-virtual": "3.14.21"
+  date-fns: "4.4.0"
+  i18next: "26.5.2"
+  react: "19.3.1"
+  react-dom: "19.3.1"
+  react-i18next: "17.1.0"
+  tailwindcss: "4.3.3"
+  typescript: "7.0.2"
