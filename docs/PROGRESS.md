@@ -13,6 +13,9 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Session log (newest first)
 
+### 2026-10-18 — review workflow
+- AGENTS.md: added Branch & PR workflow — `phase/<n>-<slug>` branch per phase, one PR per phase, client reviews and merges, no self-merge, next phase waits for merge. ROADMAP DoD + working agreements and README updated to match. Assumption: GitHub + `gh` CLI; no remote configured yet.
+
 ### 2026-10-18 — documentation & session protocol
 - Wrote `docs/SPEC.md` v1.1 (22 sections; 79 FRs; 60 ECs), `docs/TESTING.md` (TDD workflow, gates, CI), `docs/ROADMAP.md` (Phases 0–9, test-first checklists), `README.md`, `AGENTS.md`, this ledger.
 - All client decisions recorded in SPEC §20.1 (18 Step-A answers + quality model: TDD mandatory, Playwright for E2E).
@@ -27,6 +30,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
+- No git remote yet — the PR flow activates once `origin` exists (GitHub + `gh` CLI assumed).
 - Do not attempt to read `color direction - image examle.jpg` (no vision support).
 
 ## Blockers

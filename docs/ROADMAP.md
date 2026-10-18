@@ -2,7 +2,7 @@
 
 Phased plan optimized for finishing fast, with **TDD baked in**: tasks are tagged and ordered — `TEST` (write the failing test first), `IMPL` (make it green), `E2E` (end-to-end flow), `CHORE` (tooling/infra). Every task references SPEC FR/EC ids and is sized for **one working session** (~half a day). Companion docs: [SPEC.md](SPEC.md) · [TESTING.md](TESTING.md).
 
-**Global Definition of Done (applies to every phase):** all stage gates green (TESTING.md §12) · coverage gates met (§11) · traceability script passes (FR/EC ids covered) · no lint/line-count violations · phase flows pass in CI.
+**Global Definition of Done (applies to every phase):** all stage gates green (TESTING.md §12) · coverage gates met (§11) · traceability script passes (FR/EC ids covered) · no lint/line-count violations · phase flows pass in CI · **phase branch pushed, PR opened, merged by the client** (AGENTS.md Branch & PR workflow).
 
 ```mermaid
 graph LR
@@ -243,3 +243,4 @@ graph LR
 3. Bugs get a failing test first, referencing the EC id (or adding a new EC row to SPEC §16 in the same PR).
 4. Phase DoDs are cumulative: earlier phases' gates keep running on every later PR.
 5. Scope changes update SPEC.md first (single source of truth), then tests, then code.
+6. Each phase ships on a `phase/<n>-<slug>` branch as one PR; the client reviews and merges — protocol in AGENTS.md (Branch & PR workflow).

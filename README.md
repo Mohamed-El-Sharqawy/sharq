@@ -17,5 +17,5 @@ Stack: Turborepo + pnpm · Bun + Elysia (Postgres + Drizzle) · React + Vite (Re
 
 - Spec **v1.1** — approved for implementation. All client decisions recorded in SPEC §20.1.
 - **TDD is mandatory** (SPEC §9.10, TESTING.md §4): every acceptance criterion and every edge case is an automated test; no repeated manual regression.
-- **Sessions resume with zero context**: agents read `AGENTS.md` → `docs/PROGRESS.md` → next roadmap task. Progress is only "done" when the closing ritual has updated the ledger and committed.
+- **Sessions resume with zero context**: agents read `AGENTS.md` → `docs/PROGRESS.md` → next roadmap task. Progress is only "done" when the closing ritual has updated the ledger and committed. **Each phase ships as a branch + pull request — you review and merge.**
 - Theme reference `color direction - image examle.jpg` exists in the repo root but **could not be analyzed** (no image-input support in this environment). Theme tokens are placeholders — SPEC §14.4, assumption A1. Describe the palette in text (or analyze the image with a vision-capable model) and the token file is a drop-in swap.
