@@ -13,6 +13,9 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Session log (newest first)
 
+### 2026-10-18 — repo About section + releases
+- Set repo description (bilingual) and 20 topics; published release `docs-v1.1` (planning baseline); added the release policy to AGENTS.md Branch & PR workflow (phase tags after each merge, `v1.0.0` at Phase 9).
+
 ### 2026-10-18 — repo created & pushed
 - Created private GitHub repo `Mohamed-El-Sharqawy/sharq`, added `origin`, pushed `main` (docs baseline + review workflow commits). PR flow active; Phase 0 can start on `phase/0-foundation`.
 

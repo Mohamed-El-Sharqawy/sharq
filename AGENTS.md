@@ -49,6 +49,7 @@ You are building the app described in `docs/SPEC.md` on the plan in `docs/ROADMA
 - No remote yet (`git remote` empty): keep committing to the local phase branch, log a blocker in PROGRESS with the setup command (`git remote add origin <url>`, then push), and open the PR as soon as the remote exists.
 - `gh` missing or unauthenticated: push the branch and log the compare URL (`<repo-url>/compare/main...<branch>`) so the client can open the PR manually.
 - Platform assumption: GitHub + `gh` CLI (adjust commands if the client hosts elsewhere).
+- Releases: after recording a merged phase PR — and before starting the next branch — tag it (`git tag phase-<n>; git push --tags`) and publish `gh release create phase-<n> --generate-notes` with the ticked checklist as notes. Milestones: `v1.0.0` when Phase 9 merges.
 
 ## Environment facts (cached so you don't rediscover them)
 
