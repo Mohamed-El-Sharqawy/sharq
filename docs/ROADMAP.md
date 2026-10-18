@@ -32,13 +32,13 @@ graph LR
 - [x] CHORE: Playwright scaffold — chromium, desktop-RTL + mobile projects, trace viewer, axe addon (TESTING §2.1)
 - [x] CHORE: CI pipeline skeleton running stages install→lint→line-count→typecheck→unit on every PR (TESTING §12)
 - [x] TEST: hello unit test per runner (bun, vitest) proving red→green wiring — commit history shows red first
-- [ ] IMPL: Vite + React Router v7 framework mode (SPA) + fs-routes folder routing + `_app` layout + 404/error boundaries (SPEC §8.1, §11)
-- [ ] IMPL: Tailwind v4 tokens + shadcn init into `packages/ui`; RTL patch list applied (SPEC §14.1); self-hosted Arabic fonts (§14.2)
-- [ ] TEST: render tests for `EmptyState` / `LoadingState` / `ErrorState` incl. Arabic labels (SPEC §9.9)
-- [ ] IMPL: those three shared components green
-- [ ] IMPL: view transitions + `prefers-reduced-motion` handling (SPEC §14.3)
-- [ ] TEST: visual baseline of the RTL demo page (desktop + mobile) (TESTING §9)
-- [ ] CHORE: root scripts (`dev/build/lint/typecheck/test/e2e/line-count/format/db:*/seed`) (SPEC §8.4)
+- [x] IMPL: Vite + React Router v7 framework mode (SPA) + fs-routes folder routing + `_app` layout + 404/error boundaries (SPEC §8.1, §11)
+- [x] IMPL: Tailwind v4 tokens + shadcn init into `packages/ui`; RTL patch list applied (SPEC §14.1); self-hosted Arabic fonts (§14.2)
+- [x] TEST: render tests for `EmptyState` / `LoadingState` / `ErrorState` incl. Arabic labels (SPEC §9.9)
+- [x] IMPL: those three shared components green
+- [x] IMPL: view transitions + `prefers-reduced-motion` handling (SPEC §14.3)
+- [x] TEST: visual baseline of the RTL demo page (desktop + mobile) (TESTING §9)
+- [x] CHORE: root scripts `dev/build/lint/typecheck/test/e2e/line-count/format` + dev-Postgres lifecycle `db:up/stop/reset` (SPEC §8.4; `db:generate/migrate/studio` + `seed` ride Phase 1's drizzle rows — client-approved 2026-10-18)
 
 **Dependencies:** none. **Deliverables:** repo, CI, design system, docs committed.
 **DoD:** `pnpm test` green across runners; CI enforces lint + line-count + unit; demo page renders RTL-correct with Arabic font; E2E hello spec runs in CI.
@@ -52,8 +52,8 @@ graph LR
 - [ ] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
 - [ ] IMPL: `@sharq/schemas` settings registry green
 - [ ] TEST: migration tests — exclusion constraints reject overlapping memberships & rates; uniq(user, date) enforced (EC-11, EC-17, EC-40)
-- [ ] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants)
-- [ ] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate)
+- [ ] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants) + root `db:generate/migrate/studio` scripts
+- [ ] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
 - [ ] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
 - [ ] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
 - [ ] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)

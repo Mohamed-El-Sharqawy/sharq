@@ -4,6 +4,7 @@ import js from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
+import { noPhysicalUtilities } from "./rules/no-physical-utilities.js";
 
 export const PACKAGE_NAMES = ["schemas", "payroll", "locales", "ui"];
 
@@ -29,10 +30,17 @@ export const base = tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx}"],
-    plugins: { import: importPlugin, "react-hooks": reactHooks },
+    plugins: {
+      import: importPlugin,
+      "react-hooks": reactHooks,
+      sharq: { rules: { "no-physical-utilities": noPhysicalUtilities } },
+    },
     settings: { "import/resolver": { typescript: true } },
     rules: {
       ...thresholds,
+      // §14.1: logical utilities only; physical left/right banned outside
+      // packages/ui/src/rtl/ (the rule exempts that area itself).
+      "sharq/no-physical-utilities": "error",
       "import/order": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",

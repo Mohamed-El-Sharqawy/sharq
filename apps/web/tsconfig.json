@@ -1,4 +1,20 @@
 {
   "extends": "@sharq/tsconfig/app.json",
-  "include": ["app", "e2e", "vitest.config.ts", "playwright.config.ts"]
+  "compilerOptions": {
+    "paths": {
+      // app-local aliases (shadcn "components"/"lib"/"hooks" aliases).
+      "@/*": ["./app/*"],
+      // @sharq/ui sources — lets the shadcn CLI (and editors) route
+      // component files into packages/ui (SPEC §14.1/§14.4).
+      "@sharq/ui/*": ["../../packages/ui/src/*"]
+    }
+  },
+  "include": [
+    "app",
+    "e2e",
+    "react-router.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
 }

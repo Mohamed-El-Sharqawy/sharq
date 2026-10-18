@@ -1,6 +1,6 @@
-# CI pipeline skeleton — TESTING §12 stages 1–5 + stage 8 (e2e hello spec, Phase 0 DoD).
-# Stages 6 (integration, Testcontainers), 7 (build) and 9 (gates) land with the
-# phases that first need them. Windows dev host / Linux CI: POSIX paths only.
+# CI pipeline — TESTING §12 stages 1–5, 7, 8 (stage 6 integration lands with
+# Phase 1 Testcontainers suites; stage 9 gates with the phases that own them).
+# Windows dev host / Linux CI: POSIX paths only.
 name: CI
 
 on:
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   quality:
-    name: "install -> lint -> line-count -> typecheck -> unit"
+    name: "install -> lint -> line-count -> typecheck -> unit -> build"
     # Pinned, not ubuntu-latest: the label flips OS versions silently
     # (Ubuntu 26 migration 2026-10-19); upgrade deliberately instead.
     runs-on: ubuntu-24.04
@@ -66,6 +66,10 @@ jobs:
       - name: unit tests
         run: pnpm turbo run test
 
+      # Stage 7 — build: web (RRv7 SPA via vite) + api (bun build).
+      - name: build
+        run: pnpm turbo run build
+
   e2e:
     name: "e2e: Playwright chromium"
     needs: quality
@@ -98,6 +102,22 @@ jobs:
       - name: Run E2E
         run: pnpm e2e
 
+      # TESTING §9: snapshot goldens are COMMITTED, never generated on the
+      # fly. A missing baseline makes Playwright write it in-run (attempt 1
+      # fails, the retry then passes "flaky-green") — this check turns any
+      # written/updated golden into a red job, and the artifact upload below
+      # ships the fresh goldens back so they can be committed.
+      - name: Fail on uncommitted snapshot goldens
+        if: success() || failure()
+        run: |
+          changed=$(git status --porcelain -- apps/web/e2e)
+          if [ -n "$changed" ]; then
+            echo "::error::Playwright wrote snapshot goldens that are not committed:"
+            echo "$changed"
+            echo "Download the playwright-artifacts, commit the goldens, push."
+            exit 1
+          fi
+
       - name: Upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v7
@@ -106,4 +126,5 @@ jobs:
           path: |
             apps/web/test-results
             apps/web/playwright-report
+            apps/web/e2e/*-snapshots
           if-no-files-found: ignore

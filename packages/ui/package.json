@@ -4,16 +4,25 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles/*": "./src/styles/*",
+    "./components/*": "./src/components/*",
+    "./lib/*": "./src/lib/*",
+    "./hooks/*": "./src/hooks/*"
   },
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p .",
+    "test": "vitest run",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
+    "@base-ui/react": "catalog:",
     "@sharq/locales": "workspace:*",
-    "@sharq/schemas": "workspace:*"
+    "@sharq/schemas": "workspace:*",
+    "class-variance-authority": "catalog:",
+    "cn": "catalog:",
+    "tw-animate-css": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
@@ -22,9 +31,17 @@
   "devDependencies": {
     "@sharq/eslint-config": "workspace:*",
     "@sharq/tsconfig": "workspace:*",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "typescript": "catalog:"
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

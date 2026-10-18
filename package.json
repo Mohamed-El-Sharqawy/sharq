@@ -13,7 +13,10 @@
     "test": "turbo run test",
     "e2e": "turbo run e2e",
     "line-count": "turbo run line-count",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:up": "docker compose up -d",
+    "db:stop": "docker compose stop",
+    "db:reset": "docker compose down -v"
   },
   "devDependencies": {
     "prettier": "3.9.10",

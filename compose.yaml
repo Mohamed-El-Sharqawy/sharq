@@ -1,0 +1,38 @@
+# Dev-only Docker Postgres (SPEC §8.4, §17 "dev (local Docker Postgres)").
+# Production runs Coolify-managed containers — this file never ships.
+#
+# Persistence: the named volume `sharq_pgdata` holds the data directory.
+# `docker compose stop` / `down` (without -v) and any restart keep it;
+# only `down -v` (pnpm db:reset) destroys it.
+name: sharq
+
+services:
+  postgres:
+    # Major line pinned (SPEC §20 A16: no version-specific SQL); minor
+    # upgrades ride the tag, major bumps are deliberate.
+    image: postgres:18-alpine
+    container_name: sharq-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sharq}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sharq}
+      POSTGRES_DB: ${POSTGRES_DB:-sharq}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # postgres:18+ layout: mount the PARENT dir; data lands in
+      # /var/lib/postgresql/18/docker (pg_upgrade-friendly, docker-library/
+      # postgres#37). Mounting .../data like pre-18 makes 18+ refuse to boot.
+      - sharq_pgdata:/var/lib/postgresql
+    healthcheck:
+      # $$ = compose escaping: the container shell expands these at runtime.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    # Comes back after Docker Desktop / machine restarts unless explicitly stopped.
+    restart: unless-stopped
+
+volumes:
+  sharq_pgdata:
+    name: sharq_pgdata

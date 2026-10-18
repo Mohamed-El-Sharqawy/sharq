@@ -1,0 +1,13 @@
+/* apps/web — Tailwind v4 entry (SPEC §8.1/§14.4). Tokens + fonts are defined
+ * once in @sharq/ui/styles/globals.css; this file only owns the import and
+ * the source list (source(none) + explicit @source: deterministic scanning
+ * across the workspace boundary, no cwd heuristics). Physical left/right
+ * utilities are banned by lint (SPEC §14.1) — use logical ones.
+ */
+@import "tailwindcss" source(none);
+@import "@sharq/ui/styles/globals.css";
+
+/* apps/web sources (relative to this file: app/styles/../ = app/). */
+@source "../";
+/* @sharq/ui component sources. */
+@source "../../../../packages/ui/src";
