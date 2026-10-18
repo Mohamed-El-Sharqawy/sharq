@@ -33,7 +33,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
-- Remote: https://github.com/Mohamed-El-Sharqawy/sharq (private). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
+- Remote: https://github.com/Mohamed-El-Sharqawy/sharq (**public**). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
 - Do not attempt to read `color direction - image examle.jpg` (no vision support).
 
 ## Blockers
