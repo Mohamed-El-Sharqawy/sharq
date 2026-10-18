@@ -1,0 +1,109 @@
+# CI pipeline skeleton — TESTING §12 stages 1–5 + stage 8 (e2e hello spec, Phase 0 DoD).
+# Stages 6 (integration, Testcontainers), 7 (build) and 9 (gates) land with the
+# phases that first need them. Windows dev host / Linux CI: POSIX paths only.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One run per ref; superseded pushes cancel.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: "install -> lint -> line-count -> typecheck -> unit"
+    # Pinned, not ubuntu-latest: the label flips OS versions silently
+    # (Ubuntu 26 migration 2026-10-19); upgrade deliberately instead.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # Stage 1 — install. pnpm version comes from packageManager (pnpm@10.15.1).
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # bun:test runs the unit specs of packages/* + apps/api (TESTING §2.1);
+      # pinned to the host dev version to keep runtimes identical.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+
+      # Turbo local cache (hit-once per commit, prefix-restored across PRs).
+      - name: Turbo cache
+        uses: actions/cache@v6
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Stages 2-4, in order — each step fails fast before the next starts.
+      - name: lint
+        run: pnpm turbo run lint
+
+      - name: line-count
+        run: pnpm turbo run line-count
+
+      - name: typecheck
+        run: pnpm turbo run typecheck
+
+      # Stage 5 — unit: bun:test (packages + api) and Vitest (web) in parallel.
+      - name: unit tests
+        run: pnpm turbo run test
+
+  e2e:
+    name: "e2e: Playwright chromium"
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # Browser binaries keyed on the lockfile (it pins @playwright/test).
+      - name: Playwright browser cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install chromium + system deps
+        run: pnpm --filter @sharq/web exec playwright install --with-deps chromium
+
+      # Stage 8 (skeleton scope): hello spec only until the Vite webServer lands.
+      - name: Run E2E
+        run: pnpm e2e
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-artifacts
+          path: |
+            apps/web/test-results
+            apps/web/playwright-report
+          if-no-files-found: ignore

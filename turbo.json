@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "lint": {
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx}",
+        "tests/**/*.ts",
+        "e2e/**/*.{ts,tsx}",
+        "eslint.config.js",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "../../packages/eslint-config/index.js",
+        "../../packages/eslint-config/package.json"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx}",
+        "tests/**/*.ts",
+        "e2e/**/*.{ts,tsx}",
+        "tsconfig.json",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "../../packages/tsconfig/*.json"
+      ]
+    },
+    "test": {},
+    "line-count": {
+      "inputs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "../../tooling/check-line-count.mjs",
+        "../../.linecount-exemptions.json"
+      ]
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "cache": false
+    }
+  }
+}

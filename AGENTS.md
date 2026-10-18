@@ -16,7 +16,7 @@ You are building the app described in `docs/SPEC.md` on the plan in `docs/ROADMA
 1. Read `docs/PROGRESS.md` in full.
 2. Open the ROADMAP phase it names; re-read that phase's tasks and Definition of Done.
 3. If PROGRESS shows a phase **in review (PR open)**: work only that PR per the Branch & PR workflow below (address feedback, or report and stop) — never start the next phase before the PR is merged.
-4. Branch: all phase work lands on `phase/<n>-<slug>` (e.g. `phase/0-foundation`), created from fresh `main` if missing. Docs-only protocol changes may commit to `main` directly.
+4. Branch: all phase work lands on `phase/<n>-<slug>` (e.g. `phase/0-foundation`), created from fresh `main` if missing. Docs-only protocol changes ride a small `docs/*` branch + PR — `main` is protected (2026-10-18: PR required, strict required CI checks, no direct/force pushes, no deletions, admins included).
 5. Reconcile drift: if PROGRESS and the ROADMAP checkboxes disagree, ROADMAP wins for task state — fix PROGRESS and log the discrepancy.
 6. Sanity-check the environment (`pnpm install`, then `pnpm test` once code exists). If red for reasons unrelated to your task, stop and log it in PROGRESS; do not fix silently.
 7. Work the task in **Next task**, or the next unticked task of the current phase. One task ≈ one working session (half a day); smaller is fine — tick and log.

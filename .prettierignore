@@ -1,0 +1,4 @@
+# Client-authored documents — prettier must never rewrite them.
+docs/
+*.md
+pnpm-lock.yaml

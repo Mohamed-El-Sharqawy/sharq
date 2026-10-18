@@ -1,0 +1,7 @@
+{
+  "extends": "@sharq/tsconfig/pkg.json",
+  "compilerOptions": {
+    "types": ["@types/bun"]
+  },
+  "include": ["src"]
+}
