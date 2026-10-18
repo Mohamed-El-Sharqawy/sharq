@@ -6,6 +6,7 @@ packages:
 # Packages reference these as "catalog:" — never pin a shared version twice.
 catalog:
   eslint: "10.13.0"
+  elysia: "1.4.30"
   "@axe-core/playwright": "4.14.0"
   "@testcontainers/postgresql": "12.2.1"
   "@base-ui/react": "1.9.0"

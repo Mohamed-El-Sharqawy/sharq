@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@sharq/schemas": "workspace:*",
+    "@sinclair/typebox": "catalog:",
     "drizzle-orm": "catalog:",
+    "elysia": "catalog:",
     "postgres": "catalog:"
   },
   "devDependencies": {
