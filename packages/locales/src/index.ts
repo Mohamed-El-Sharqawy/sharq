@@ -4,3 +4,6 @@
 // TEMP hello-wiring export — proven by src/hello.test.ts; deleted when Phase 1
 // lands real exports (tracked in PROGRESS).
 export const runnerInfo = "bun";
+
+// App-shell strings (routing skeleton, roadmap row 8).
+export * from "./app";

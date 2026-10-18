@@ -1,6 +1,8 @@
 # dependencies & builds
 node_modules/
 dist/
+build/
+.react-router/
 .turbo/
 
 # env & secrets

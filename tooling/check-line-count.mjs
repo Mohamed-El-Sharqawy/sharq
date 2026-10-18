@@ -21,7 +21,9 @@ import ts from "typescript";
 const MAX_LINES = 150;
 const SKIP_DIRS = new Set([
   ".git",
+  ".react-router", // react-router generated types (build artifact, not source)
   ".turbo",
+  "build", // vite/RR build output (same class as dist)
   "coverage",
   "dist",
   "node_modules",

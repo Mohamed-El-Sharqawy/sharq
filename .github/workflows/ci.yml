@@ -1,6 +1,6 @@
-# CI pipeline skeleton — TESTING §12 stages 1–5 + stage 8 (e2e hello spec, Phase 0 DoD).
-# Stages 6 (integration, Testcontainers), 7 (build) and 9 (gates) land with the
-# phases that first need them. Windows dev host / Linux CI: POSIX paths only.
+# CI pipeline — TESTING §12 stages 1–5, 7, 8 (stage 6 integration lands with
+# Phase 1 Testcontainers suites; stage 9 gates with the phases that own them).
+# Windows dev host / Linux CI: POSIX paths only.
 name: CI
 
 on:
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   quality:
-    name: "install -> lint -> line-count -> typecheck -> unit"
+    name: "install -> lint -> line-count -> typecheck -> unit -> build"
     # Pinned, not ubuntu-latest: the label flips OS versions silently
     # (Ubuntu 26 migration 2026-10-19); upgrade deliberately instead.
     runs-on: ubuntu-24.04
@@ -65,6 +65,10 @@ jobs:
       # Stage 5 — unit: bun:test (packages + api) and Vitest (web) in parallel.
       - name: unit tests
         run: pnpm turbo run test
+
+      # Stage 7 — build: web (RRv7 SPA via vite) + api (bun build).
+      - name: build
+        run: pnpm turbo run build
 
   e2e:
     name: "e2e: Playwright chromium"

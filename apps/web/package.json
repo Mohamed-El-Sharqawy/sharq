@@ -4,15 +4,27 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "react-router dev",
+    "build": "react-router build",
     "lint": "eslint .",
-    "typecheck": "tsc -p .",
+    "typecheck": "react-router typegen && tsc -p .",
     "test": "vitest run",
     "e2e": "playwright test",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
+  "dependencies": {
+    "@react-router/node": "catalog:",
+    "@sharq/locales": "workspace:*",
+    "isbot": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router": "catalog:"
+  },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
     "@playwright/test": "catalog:",
+    "@react-router/dev": "catalog:",
+    "@react-router/fs-routes": "catalog:",
     "@sharq/eslint-config": "workspace:*",
     "@sharq/tsconfig": "workspace:*",
     "@testing-library/dom": "catalog:",
@@ -24,8 +36,6 @@
     "eslint": "catalog:",
     "jsdom": "catalog:",
     "playwright-core": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
