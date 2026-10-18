@@ -13,6 +13,9 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Session log (newest first)
 
+### 2026-10-18 — repo created & pushed
+- Created private GitHub repo `Mohamed-El-Sharqawy/sharq`, added `origin`, pushed `main` (docs baseline + review workflow commits). PR flow active; Phase 0 can start on `phase/0-foundation`.
+
 ### 2026-10-18 — review workflow
 - AGENTS.md: added Branch & PR workflow — `phase/<n>-<slug>` branch per phase, one PR per phase, client reviews and merges, no self-merge, next phase waits for merge. ROADMAP DoD + working agreements and README updated to match. Assumption: GitHub + `gh` CLI; no remote configured yet.
 
@@ -30,7 +33,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
-- No git remote yet — the PR flow activates once `origin` exists (GitHub + `gh` CLI assumed).
+- Remote: https://github.com/Mohamed-El-Sharqawy/sharq (private). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
 - Do not attempt to read `color direction - image examle.jpg` (no vision support).
 
 ## Blockers
