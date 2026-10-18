@@ -7,9 +7,12 @@
     "lint": "eslint .",
     "typecheck": "tsc -p .",
     "test": "vitest run",
+    "e2e": "playwright test",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@playwright/test": "catalog:",
     "@sharq/eslint-config": "workspace:*",
     "@sharq/tsconfig": "workspace:*",
     "@testing-library/dom": "catalog:",
@@ -20,6 +23,7 @@
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "jsdom": "catalog:",
+    "playwright-core": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "typescript": "catalog:",

@@ -5,14 +5,22 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** tasks 1–5 of 13 done (rows 1,2,3,4,7) — both test runners live and red→green proven: bun:test in schemas/payroll/locales/api, Vitest 5 + jsdom + Testing Library in web; app skeletons in place. Full `turbo run lint typecheck test line-count build` 24/24 green.
+- **Status:** tasks 1–6 of 13 done (rows 1,2,3,4,5,7) — Playwright live: chromium-only, `desktop-RTL` (1280×720) + `mobile` (Pixel 7) projects, axe addon, trace `retain-on-failure`; `pnpm e2e` (root→turbo, `cache:false`) green 4/4; red-proven (axe flags critical `button-name`, trace.zip retained). Full `turbo run lint typecheck test line-count --force` 23/23 green; prettier clean.
 
 ## Next task
 
-- [ ] CHORE: Playwright scaffold — chromium, desktop-RTL + mobile projects, trace viewer, axe addon (TESTING §2.1)
-  - Lands in `apps/web/e2e/` (dir exists); decide `@playwright/test` version + `playwright.config.ts` projects (`desktop-RTL` viewport `1280x720` + `mobile` per TESTING §2.1/§9); axe via `@axe-core/playwright`; wire `apps/web` `e2e` script + root `pnpm e2e` (turbo task exists, `cache:false`).
+- [ ] CHORE: CI pipeline skeleton running stages install→lint→line-count→typecheck→unit on every PR (TESTING §12)
+  - GitHub Actions workflow (`.github/workflows/ci.yml`): pnpm 10.15.1 + Node 24, turbo cache (TESTING §12 stage 1), stages in order lint→line-count→typecheck→unit (bun on `packages/*`+`apps/api`, vitest on web — parallel). Phase DoD also demands "E2E hello spec runs in CI": add an e2e job with `pnpm exec playwright install chromium` + browser cache, or defer consciously and log it. Windows dev host, Linux CI — keep paths POSIX.
 
 ## Session log (newest first)
+
+### 2026-10-18 — Phase 0 task 5 (row 5): Playwright scaffold
+- Catalog grew: `@playwright/test` 1.64.1, `@axe-core/playwright` 4.14.0, `playwright-core` 1.64.1. `apps/web` devDeps (catalog:) + `e2e: playwright test` script; chromium v1248 (CfT 156) installed host-wide.
+- `apps/web/playwright.config.ts`: testDir `e2e`, chromium-only via device descriptors; projects `desktop-RTL` (Desktop Chrome, viewport 1280×720) + `mobile` (Pixel 7); shared context `locale ar-EG` + `timezoneId Africa/Cairo` (TESTING §13); `trace: retain-on-failure` + `screenshot: only-on-failure`; CI: `workers 2` (TESTING §3 minimum), `retries 1`, `forbidOnly`; reporter list + html(`open:never`), `github` on CI; `baseURL :5173` ready for the Vite task (no webServer yet — that task adds it).
+- `e2e/hello.spec.ts` (TEMP hello-wiring, grep-able): RTL render assert + axe zero-critical scan, both via `page.setContent` (no server exists yet); replaced by `page.goto("/")` when Vite+RRv7 lands. `e2e/.gitkeep` removed.
+- Wiring: web tsconfig `include` now `app, e2e, vitest.config.ts, playwright.config.ts` (specs + configs typechecked — vitest.config.ts was silently uncovered before, drift fixed); turbo `lint`/`typecheck` inputs gained `e2e/**` + `playwright.config.ts`/`vitest.config.ts`.
+- Proven: green 4/4 via root `pnpm e2e` (turbo `cache:false` honored — "cache bypass, force executing"); red-proven on desktop-RTL — empty `<button>` → axe `button-name` critical fails the scan with full violation detail, and `test-results/<test>/trace.zip` retained (`playwright show-trace` usage printed by the runner). Full `turbo run lint typecheck test line-count --force` 23/23; prettier clean. One en-route fix: reporter array literal needed explicit `ReporterDescription[]` typing under TS strict.
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — Phase 0 tasks 4+7 (rows 4 & 7): test runners + hello specs red→green
 - Commit 1 (CHORE, green): `apps/api` skeleton (§8.1: src/index, src/app, db/plugins/modules/lib, tests; dev/build/lint/typecheck/line-count scripts, `bun build --target=bun` verified) + `apps/web` skeleton (app/routes, features, lib, styles, test, e2e; vitest.config.ts + setup.ts with explicit RTL cleanup — globals off; lint/typecheck/line-count). Catalog grew: @types/bun 1.2.23 (matches host bun 1.2.21 line), @types/node 24.19.2, @types/react(-dom) 19.3.0, @testing-library/{react 16.3.3, dom 10.4.2, jest-dom 7.0.1}, jsdom 30.1.3, vite 7.3.7, vitest 5.0.5 (vite is a required vitest peer; 7.x picked as the RRv7-compat-safe line). turbo lint/typecheck inputs broadened for `app/**`, `tests/**`, `e2e/**`, `vitest.config.ts`.
@@ -55,6 +63,10 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 - Initialized git + `.gitignore`; committed the documentation baseline (closing ritual step 3).
 
 ## Decisions & deviations
+
+- **`playwright-core` pinned in catalog (2026-10-18, task 5):** `@axe-core/playwright` peers on `playwright-core`, which pnpm's `auto-install-peers` would float to *latest* on fresh installs — drifting from `@playwright/test`. Pinning `playwright-core` 1.64.1 (lockstep release line with `@playwright/test`) in the catalog + web devDeps keeps both resolvable at one exact version.
+- **e2e hello spec is `setContent`-based until the Vite task (2026-10-18, task 5):** no dev server exists yet, so the scaffold proof renders inline Arabic RTL HTML instead of `page.goto("/")`; `baseURL` is pre-wired and the webServer + goto swap is part of the Vite+RRv7 task (row 8). Tracked under the same TEMP hello-wiring grep marker.
+- **Web tsconfig now typechecks configs + e2e (2026-10-18, task 5):** `include` was `app` only — `vitest.config.ts` was never typechecked (turbo inputs listed it, tsconfig never included it). Both configs + `e2e/` are now in scope; drift fixed in the same session, no SPEC change needed.
 
 - **TEMP hello-wiring artifacts, removal duty tracked (2026-10-18, tasks 4+7):** `runnerInfo` exports in schemas/locales/api/payroll `src/index.ts` + `apps/web/app/hello.tsx` + the five `hello.test.*` files are wiring proofs only. Delete when real exports/screens land (schemas+locales+api: Phase 1; payroll: Phase 3; web hello: the Vite+RR task). Grep `TEMP hello-wiring`.
 - **`bun:test` types need an explicit `"types": ["@types/bun"]` (2026-10-18, task 4):** TS 6.0.3 did not auto-include the ambient `declare module "bun:test"` from bun-types via @types auto-inclusion under pnpm; Bun's documented snippet fixes it. Side effect: Bun globals typecheck inside packages — the §9.1 ESLint import bans (`bun`, `drizzle-orm`) remain the guard on src.

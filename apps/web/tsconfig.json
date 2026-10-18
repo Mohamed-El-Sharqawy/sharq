@@ -1,4 +1,4 @@
 {
   "extends": "@sharq/tsconfig/app.json",
-  "include": ["app"]
+  "include": ["app", "e2e", "vitest.config.ts", "playwright.config.ts"]
 }
