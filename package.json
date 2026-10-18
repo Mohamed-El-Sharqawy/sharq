@@ -17,6 +17,7 @@
     "db:generate": "pnpm --filter @sharq/api exec drizzle-kit generate",
     "db:migrate": "pnpm --filter @sharq/api exec bun run src/db/migrate.ts",
     "db:studio": "pnpm --filter @sharq/api exec drizzle-kit studio",
+    "seed": "pnpm --filter @sharq/api run seed",
     "db:up": "docker compose up -d",
     "db:stop": "docker compose stop",
     "db:reset": "docker compose down -v"

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p .",
     "test": "bun test",
+    "seed": "bun run src/db/seed.ts",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
