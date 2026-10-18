@@ -49,15 +49,15 @@ describe("FR-AUTH-03 · session resolution (sliding idle window)", () => {
 
     const at = new Date(T0.getTime() + minutes(5));
     const resolved = await service.resolveSession(token, at);
+    if (!resolved) throw new Error("live session must resolve");
 
-    expect(resolved).not.toBeNull();
-    expect(resolved?.user.id).toBe(user.id);
-    expect(resolved?.session.expiresAt.getTime()).toBe(
+    expect(resolved.user.id).toBe(user.id);
+    expect(resolved.session.expiresAt.getTime()).toBe(
       at.getTime() + minutes(60),
     );
     expect(calls.touchSession).toEqual([
       {
-        id: resolved?.session.id,
+        id: resolved.session.id,
         lastSeenAt: at,
         expiresAt: new Date(at.getTime() + minutes(60)),
       },
@@ -76,7 +76,7 @@ describe("FR-AUTH-03 · session resolution (sliding idle window)", () => {
 
   it("given a revoked session, when resolved, then it is dead even inside the idle window", async () => {
     const user = makeUser({ passwordHash: await hashPassword(PASSWORD) });
-    const { service, calls } = await makeService([user]);
+    const { service } = await makeService([user]);
     const token = await loggedInToken(service);
 
     await service.logout(token, new Date(T0.getTime() + minutes(1)));

@@ -57,21 +57,15 @@ export function makeAudit(): AuditSpy {
 export function makeRepo(users: UserWithHash[]) {
   const sessions = new Map<string, StoredSession>();
   const calls = {
-    insertSession: [] as {
-      userId: string;
-      tokenHash: string;
-      lastSeenAt: Date;
-      expiresAt: Date;
-      ip: string | null;
-      userAgent: string | null;
-    }[],
+    insertSession: [] as Parameters<AuthRepo["insertSession"]>[0][],
     touchSession: [] as { id: string; lastSeenAt: Date; expiresAt: Date }[],
     revoked: [] as { id: string; revokedAt: Date }[],
   };
 
   const stripHash = (u: UserWithHash): AuthUser => {
-    const { passwordHash: _ignored, ...user } = u;
-    return user;
+    const copy = { ...u };
+    delete (copy as Partial<UserWithHash>).passwordHash;
+    return copy;
   };
 
   const repo: AuthRepo = {

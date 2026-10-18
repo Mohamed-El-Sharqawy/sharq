@@ -14,6 +14,7 @@
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
+    "@sharq/schemas": "workspace:*",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },

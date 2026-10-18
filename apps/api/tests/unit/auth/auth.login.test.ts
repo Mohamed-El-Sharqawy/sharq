@@ -30,7 +30,7 @@ async function makeService(users: UserWithHash[]) {
   return { service, sessions, calls, audit };
 }
 
-describe("FR-AUTH-01 · login by username or phone", () => {
+describe("FR-AUTH-01 · login issues a session from username credentials", () => {
   it("given valid username + password, when logging in, then a session row is created for the SHA-256 of the token", async () => {
     const user = makeUser({ passwordHash: await hashPassword(PASSWORD) });
     const { service, sessions } = await makeService([user]);
@@ -44,20 +44,6 @@ describe("FR-AUTH-01 · login by username or phone", () => {
     if (!result.ok) return;
     expect(result.token).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(sessions.has(sha256Hex(result.token))).toBe(true);
-  });
-
-  it("given the same credentials by phone, when logging in, then the same account is reached", async () => {
-    const user = makeUser({ passwordHash: await hashPassword(PASSWORD) });
-    const { service } = await makeService([user]);
-
-    const result = await service.login(
-      { identifier: "+201000000003", password: PASSWORD },
-      T0,
-    );
-
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.user.id).toBe(user.id);
   });
 
   it("given no idle override, when a session is created, then expiry comes from the registry default (240 min)", async () => {
@@ -90,6 +76,22 @@ describe("FR-AUTH-01 · login by username or phone", () => {
     if (!result.ok) return;
     expect(result.mustChangePassword).toBe(true);
     expect(Object.hasOwn(result.user, "passwordHash")).toBe(false);
+  });
+});
+
+describe("FR-AUTH-01 · login by phone + request context", () => {
+  it("given the same credentials by phone, when logging in, then the same account is reached", async () => {
+    const user = makeUser({ passwordHash: await hashPassword(PASSWORD) });
+    const { service } = await makeService([user]);
+
+    const result = await service.login(
+      { identifier: "+201000000003", password: PASSWORD },
+      T0,
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.user.id).toBe(user.id);
   });
 
   it("given a login with request context, when the session row is written, then ip and user agent are recorded", async () => {

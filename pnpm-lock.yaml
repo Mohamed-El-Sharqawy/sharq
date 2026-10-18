@@ -122,6 +122,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@sharq/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.4(bun-types@1.4.3)(postgres@3.4.9)
