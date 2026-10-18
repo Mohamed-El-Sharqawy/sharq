@@ -97,9 +97,12 @@ test.describe("SPEC §14.3 · view transitions · page root & travel direction",
     });
     await page.goto("/");
     await page.getByRole("link", { name: "صفحة المعاينة" }).click();
+    // 10s: cold dev-server boot + full-parallel workers can exceed the 5s
+    // expect default (one flake observed under exactly that load, 2026-10-18).
     await expect(page.locator("html")).toHaveAttribute(
       "data-vt-dir",
       "forward",
+      { timeout: 10_000 },
     );
     // <Link viewTransition> really went through document.startViewTransition.
     await expect
@@ -108,7 +111,9 @@ test.describe("SPEC §14.3 · view transitions · page root & travel direction",
       )
       .toBeGreaterThan(0);
     await page.goBack();
-    await expect(page.locator("html")).toHaveAttribute("data-vt-dir", "back");
+    await expect(page.locator("html")).toHaveAttribute("data-vt-dir", "back", {
+      timeout: 10_000,
+    });
   });
 });
 

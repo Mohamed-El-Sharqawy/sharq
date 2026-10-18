@@ -15,9 +15,21 @@ const reporter: ReporterDescription[] = [
   ["html", { open: "never" }], // view with: pnpm exec playwright show-report
 ];
 
+// TESTING §9 visual-baseline policy, set once here for every spec:
+// full-page capture, animations frozen (deterministic skeletons), and a
+// 500-pixel absolute budget — big enough for cross-runner raster noise,
+// far too small to survive an RTL/font/layout regression. Goldens are
+// committed next to each spec, auto-suffixed with project + platform.
+const screenshotPolicy = {
+  fullPage: true,
+  animations: "disabled" as const,
+  maxDiffPixels: 500,
+};
+
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: true,
+  expect: { toHaveScreenshot: screenshotPolicy },
   forbidOnly: !!process.env.CI,
   // TESTING §3: E2E budget assumes >= 2 parallel workers; CI pins exactly 2.
   workers: process.env.CI ? 2 : undefined,

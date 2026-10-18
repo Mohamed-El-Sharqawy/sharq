@@ -102,6 +102,22 @@ jobs:
       - name: Run E2E
         run: pnpm e2e
 
+      # TESTING §9: snapshot goldens are COMMITTED, never generated on the
+      # fly. A missing baseline makes Playwright write it in-run (attempt 1
+      # fails, the retry then passes "flaky-green") — this check turns any
+      # written/updated golden into a red job, and the artifact upload below
+      # ships the fresh goldens back so they can be committed.
+      - name: Fail on uncommitted snapshot goldens
+        if: success() || failure()
+        run: |
+          changed=$(git status --porcelain -- apps/web/e2e)
+          if [ -n "$changed" ]; then
+            echo "::error::Playwright wrote snapshot goldens that are not committed:"
+            echo "$changed"
+            echo "Download the playwright-artifacts, commit the goldens, push."
+            exit 1
+          fi
+
       - name: Upload Playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v7
@@ -110,4 +126,5 @@ jobs:
           path: |
             apps/web/test-results
             apps/web/playwright-report
+            apps/web/e2e/*-snapshots
           if-no-files-found: ignore

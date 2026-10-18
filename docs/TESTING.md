@@ -183,6 +183,13 @@ Arabic UI strings are asserted exactly as written in SPEC §2 (no partial matche
 
 Plus, every run: axe scan per route (zero critical), visual baselines per key screen (desktop RTL + mobile), one keyboard-only grid navigation pass (arrows/Enter/Esc/Tab per SPEC §14.4).
 
+**Visual-baseline policy** (wired in Phase 0, row 13):
+
+- Goldens live in `<spec>.spec.ts-snapshots/` next to each spec and are **committed**; Playwright auto-suffixes each file with project + platform (`-desktop-RTL-linux` / `-mobile-win32`), so each OS keeps its own golden — never compare across renderers.
+- Capture/tolerance options are set **once** in `apps/web/playwright.config.ts` (`expect.toHaveScreenshot`): `fullPage: true`, `animations: "disabled"` (freezes skeleton pulses), `maxDiffPixels: 500`. Specs stay policy-free.
+- CI fails if a run writes or updates a golden (uncommitted-goldens check in the e2e job): fresh goldens arrive via the failure artifact, get committed, and the next run verifies them. A golden is therefore always reviewed-and-committed, never silently regenerated.
+- Refreshing an intentional visual change: `pnpm e2e -- --update-snapshots` locally for win32, plus the CI artifact loop for linux; both goldens land in one commit.
+
 ---
 
 ## 10. Excel snapshot tests
