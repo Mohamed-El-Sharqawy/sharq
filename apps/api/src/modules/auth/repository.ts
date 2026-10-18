@@ -7,7 +7,12 @@
 import { and, eq, isNull, or } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../db/schema";
-import type { AuthRepo, AuthSession, AuthUserWithHash } from "./service";
+import type {
+  AuthRepo,
+  AuthSession,
+  AuthUser,
+  AuthUserWithHash,
+} from "./service";
 
 type Db = PostgresJsDatabase<typeof schema>;
 
@@ -72,7 +77,11 @@ async function findSessionByTokenHash(db: Db, tokenHash: string) {
   if (!row) return undefined;
   return {
     session: toSession(row.session),
-    user: toUserWithHash(row.user),
+    // Hash-free on purpose: this path feeds resolveSession → the /me wire
+    // shape (FR-AUTH-01). The port type promises AuthUser; a hash here
+    // ships the argon2id digest to the client (caught by the contract
+    // suite's closed AuthUserBody schema).
+    user: toUser(row.user),
   };
 }
 
@@ -137,6 +146,11 @@ async function revokeSession(db: Db, id: string, revokedAt: Date) {
 function toUserWithHash(
   row: typeof schema.users.$inferSelect,
 ): AuthUserWithHash {
+  return { ...toUser(row), passwordHash: row.passwordHash };
+}
+
+/** The wire-safe user (§10.2: passwordHash is repo-private). */
+function toUser(row: typeof schema.users.$inferSelect): AuthUser {
   return {
     id: row.id,
     username: row.username,
@@ -145,7 +159,6 @@ function toUserWithHash(
     role: row.role,
     isActive: row.isActive,
     mustChangePassword: row.mustChangePassword,
-    passwordHash: row.passwordHash,
   };
 }
 
