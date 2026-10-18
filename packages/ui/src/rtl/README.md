@@ -8,14 +8,20 @@ this directory** — it is the single sanctioned escape hatch.
 
 ## Protocol
 
-1. Radix/shadcn primitives compute positions from `dir`, but a few hard-code
-   physical sides (chevrons, side offsets, text alignment). Those components
-   get a patch file here instead of a fork or inline hacks in feature code.
-2. One file per component: `select-rtl.tsx`, `pagination-rtl.tsx`, … each
-   exports the fixed variant. The generic component stays in
-   `../components/`; screens import the RTL-patched one from here.
-3. Physical utilities may appear **only** inside this directory (that is the
-   lint exemption); every patch file states which §14.1 row it fulfills.
+1. Radix/Base UI primitives compute positions from `dir`, but generated code
+   can still hard-code physical sides. Two patch levels, both inside this
+   package:
+   - **Token-level fixes** (e.g. `pl-/pr-` → logical `ps-/pe-`): applied in
+     place in `../components/<name>.tsx` — vendored source is ours to own,
+     and logical utilities are correct in LTR too. Noted with a
+     `SPEC §14.1 RTL patch` comment.
+   - **Behavioral flips** (chevron direction, side mapping, week order): a
+     wrapper in this directory (`select-rtl.tsx`, …); screens import the
+     patched variant from here.
+2. Physical utilities may appear **only** inside this directory (the lint
+   exemption); every patch states which §14.1 row it fulfills.
+3. When regenerating a component via the shadcn CLI, re-apply its patch
+   (grep the file for `pl-|pr-|left-|right-` after re-adding).
 
 ## Patch checklist (SPEC §14.1, patch lands with the component)
 

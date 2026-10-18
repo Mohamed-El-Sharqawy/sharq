@@ -16,11 +16,11 @@
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
+    "@base-ui/react": "catalog:",
     "@sharq/locales": "workspace:*",
     "@sharq/schemas": "workspace:*",
     "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
-    "tailwind-merge": "catalog:",
+    "cn": "catalog:",
     "tw-animate-css": "catalog:"
   },
   "peerDependencies": {
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@sharq/eslint-config": "workspace:*",
     "@sharq/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
