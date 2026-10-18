@@ -34,8 +34,9 @@ export function createGuards(deps: GuardDeps) {
       // Runtime: no/invalid session short-circuits with 401 AUTH_REQUIRED.
       // Declared as the success shape so `user`/`sessionToken` flow into the
       // route handlers' types (the status branch is Elysia's short-circuit,
-      // not a route response — envelope errors are untyped until row 10
-      // wires per-route response schemas).
+      // not a route response — envelope errors are contract-validated
+      // test-side via the closed @sharq/schemas schemas; per-route Elysia
+      // response schemas land when Eden is first consumed, Phase 2+).
       resolve: async ({ cookie }: { cookie: Jar }): Promise<GuardContext> => {
         const raw = cookie[SESSION_COOKIE]?.value;
         const token = typeof raw === "string" ? raw : undefined;
