@@ -10,6 +10,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Next task
 
 - [ ] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)
+  - Note: `apps/api` and `apps/web` don't exist yet — create their skeletons (§8.1 tree) as part of this task; the hello-test task two rows down then proves each runner red→green.
 
 ## Session log (newest first)
 
