@@ -19,7 +19,6 @@ import {
   MATRIX,
   type Actor,
   type Credentials,
-  type MatrixRow,
 } from "./role-matrix.data";
 import { startTestDb, type TestDb } from "./helpers";
 
@@ -113,6 +112,10 @@ describe("§3 × §10.6 role matrix", () => {
         if (expected[actor] === 401) await expectEnvelope(res, "AUTH_REQUIRED");
         else if (expected[actor] === 403)
           await expectEnvelope(res, "AUTH_FORBIDDEN");
+        else if (expected[actor] === 404)
+          // Planned rows pin §10.4 too: an absent route is a NOT_FOUND
+          // envelope (the harness caught unknown routes 500ing INTERNAL).
+          await expectEnvelope(res, "NOT_FOUND");
       }
     });
   }

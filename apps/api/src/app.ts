@@ -27,10 +27,15 @@ export function createApp(deps: AppDeps) {
   });
   return new Elysia({ name: "sharq-api" })
     .onError({ as: "global" }, ({ code }) => {
-      // §10.4: validation/parse problems are VALIDATION_FAILED; anything
-      // uncaught is INTERNAL (details logged in row 12's pino wiring).
+      // §10.4: validation/parse problems are VALIDATION_FAILED; unknown
+      // routes are NOT_FOUND (Elysia delivers them through this handler —
+      // without this branch they 500); anything uncaught is INTERNAL
+      // (details logged in row 12's pino wiring).
       if (code === "VALIDATION" || code === "PARSE") {
         return apiErrorStatus("VALIDATION_FAILED");
+      }
+      if (code === "NOT_FOUND") {
+        return apiErrorStatus("NOT_FOUND");
       }
       return apiErrorStatus("INTERNAL");
     })

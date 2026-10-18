@@ -36,86 +36,113 @@ export type MatrixRow = {
   bodyFor?: (creds: Credentials) => unknown;
 };
 
+type RowOpts = Partial<
+  Pick<MatrixRow, "fr" | "ok" | "live" | "body" | "bodyFor">
+>;
+
 const r = (
   method: MatrixRow["method"],
   path: string,
   access: Access,
-  fr: string | undefined,
-  ok = 200,
-  extra: Partial<MatrixRow> = {},
-): MatrixRow => ({ method, path, access, fr, ok, live: false, ...extra });
+  opts: RowOpts = {},
+): MatrixRow => ({
+  method,
+  path,
+  access,
+  fr: opts.fr,
+  ok: opts.ok ?? 200,
+  live: opts.live ?? false,
+  body: opts.body,
+  bodyFor: opts.bodyFor,
+});
 
 /** §10.6 verbatim, decomposed to one probe per (method, path). */
 export const MATRIX: MatrixRow[] = [
-  r("POST", "/api/auth/login", "public", "AUTH-01", 200, {
+  r("POST", "/api/auth/login", "public", {
+    fr: "AUTH-01",
+    live: true,
     bodyFor: (c) => ({ identifier: c.username, password: c.password }),
   }),
-  r("GET", "/api/auth/me", "any", "AUTH-01", 200),
-  r("POST", "/api/auth/password", "any", "AUTH-07", 204, {
+  r("GET", "/api/auth/me", "any", { fr: "AUTH-01", live: true }),
+  r("POST", "/api/auth/password", "any", {
+    fr: "AUTH-07",
+    ok: 204,
+    live: true,
     bodyFor: (c) => ({ current: c.password, next: "Matrix-Rotated#1" }),
   }),
   // Logout is destructive (revokes the actor sessions) — it probes LAST so
   // the rows above still have live sessions.
-  r("POST", "/api/auth/logout", "any", "AUTH-02", 204),
-  r("GET", "/api/users", "admin", "ADM-06"),
-  r("POST", "/api/users", "admin", "AUTH-04"),
-  r("PATCH", "/api/users/:id", "admin", "AUTH-06/07"),
-  r("POST", "/api/users/:id/reset-password", "admin", "AUTH-05"),
-  r("POST", "/api/users/:id/deactivate", "admin", "AUTH-06"),
-  r("POST", "/api/users/:id/reactivate", "admin", "AUTH-06"),
-  r("GET", "/api/teams", "admin", "ADM-01"),
-  r("POST", "/api/teams", "admin", "ADM-01"),
-  r("PATCH", "/api/teams/:id", "admin", "ADM-02"),
-  r("POST", "/api/teams/:id/members", "admin", "ADM-03/05"),
-  r("PATCH", "/api/teams/:id/members/:mid", "admin", "ADM-04/05"),
+  r("POST", "/api/auth/logout", "any", { fr: "AUTH-02", ok: 204, live: true }),
+  r("GET", "/api/users", "admin", { fr: "ADM-06" }),
+  r("POST", "/api/users", "admin", { fr: "AUTH-04" }),
+  r("PATCH", "/api/users/:id", "admin", { fr: "AUTH-06/07" }),
+  r("POST", "/api/users/:id/reset-password", "admin", { fr: "AUTH-05" }),
+  r("POST", "/api/users/:id/deactivate", "admin", { fr: "AUTH-06" }),
+  r("POST", "/api/users/:id/reactivate", "admin", { fr: "AUTH-06" }),
+  r("GET", "/api/teams", "admin", { fr: "ADM-01" }),
+  r("POST", "/api/teams", "admin", { fr: "ADM-01" }),
+  r("PATCH", "/api/teams/:id", "admin", { fr: "ADM-02" }),
+  r("POST", "/api/teams/:id/members", "admin", { fr: "ADM-03/05" }),
+  r("PATCH", "/api/teams/:id/members/:mid", "admin", { fr: "ADM-04/05" }),
   // §10.6: settings GET is "admin (edit) / all (read resolved)" — every
   // authenticated role may read the resolved map (employees the formatting
   // subset); only admins PATCH.
-  r("GET", "/api/settings", "any", "SET-01"),
-  r("PATCH", "/api/settings/:key", "admin", "SET-02/11/12"),
-  r("POST", "/api/settings/impact", "admin", "SET-02"),
-  r("GET", "/api/rates", "admin", "SET-03"),
-  r("POST", "/api/rates", "admin", "SET-03"),
-  r("PATCH", "/api/rates/:id", "admin", "SET-03"),
-  r("GET", "/api/reason-catalog", "admin", "SET-04"),
-  r("POST", "/api/reason-catalog", "admin", "SET-04"),
-  r("PATCH", "/api/reason-catalog/:id", "admin", "SET-04"),
-  r("GET", "/api/attendance-statuses", "admin", "SET-05"),
-  r("POST", "/api/attendance-statuses", "admin", "SET-05"),
-  r("PATCH", "/api/attendance-statuses/:id", "admin", "SET-05"),
-  r("GET", "/api/holidays", "admin", "SET-06"),
-  r("POST", "/api/holidays", "admin", "SET-06"),
-  r("DELETE", "/api/holidays/:id", "admin", "SET-06"),
-  r("GET", "/api/attendance", "teamScoped", "GRID-01"),
-  r("POST", "/api/attendance/bulk", "teamScoped", "ATT-08"),
-  r("PATCH", "/api/attendance/:id", "teamScoped", "ATT-04/06"),
-  r("DELETE", "/api/attendance/:id", "teamScoped", "ATT-06"),
-  r("POST", "/api/deductions", "teamScoped", "ATT-03"),
-  r("PATCH", "/api/deductions/:id", "teamScoped", "ATT-03"),
-  r("DELETE", "/api/deductions/:id", "teamScoped", "ATT-03"),
-  r("GET", "/api/periods", "teamScoped", "PAY-01"),
-  r("POST", "/api/periods/generate", "admin", "PAY-01"),
+  r("GET", "/api/settings", "any", { fr: "SET-01" }),
+  r("PATCH", "/api/settings/:key", "admin", { fr: "SET-02/11/12" }),
+  r("POST", "/api/settings/impact", "admin", { fr: "SET-02" }),
+  r("GET", "/api/rates", "admin", { fr: "SET-03" }),
+  r("POST", "/api/rates", "admin", { fr: "SET-03" }),
+  r("PATCH", "/api/rates/:id", "admin", { fr: "SET-03" }),
+  r("GET", "/api/reason-catalog", "admin", { fr: "SET-04" }),
+  r("POST", "/api/reason-catalog", "admin", { fr: "SET-04" }),
+  r("PATCH", "/api/reason-catalog/:id", "admin", { fr: "SET-04" }),
+  r("GET", "/api/attendance-statuses", "admin", { fr: "SET-05" }),
+  r("POST", "/api/attendance-statuses", "admin", { fr: "SET-05" }),
+  r("PATCH", "/api/attendance-statuses/:id", "admin", { fr: "SET-05" }),
+  r("GET", "/api/holidays", "admin", { fr: "SET-06" }),
+  r("POST", "/api/holidays", "admin", { fr: "SET-06" }),
+  r("DELETE", "/api/holidays/:id", "admin", { fr: "SET-06" }),
+  r("GET", "/api/attendance", "teamScoped", { fr: "GRID-01" }),
+  r("POST", "/api/attendance/bulk", "teamScoped", { fr: "ATT-08" }),
+  r("PATCH", "/api/attendance/:id", "teamScoped", { fr: "ATT-04/06" }),
+  r("DELETE", "/api/attendance/:id", "teamScoped", { fr: "ATT-06" }),
+  r("POST", "/api/deductions", "teamScoped", { fr: "ATT-03" }),
+  r("PATCH", "/api/deductions/:id", "teamScoped", { fr: "ATT-03" }),
+  r("DELETE", "/api/deductions/:id", "teamScoped", { fr: "ATT-03" }),
+  r("GET", "/api/periods", "teamScoped", { fr: "PAY-01" }),
+  r("POST", "/api/periods/generate", "admin", { fr: "PAY-01" }),
   // §3: lock/mark-paid allow the supervisor for his OWN team behind the
   // policy flags; unlock is admin-only (audited).
-  r("POST", "/api/periods/:id/lock", "teamScoped", "PAY-04"),
-  r("POST", "/api/periods/:id/mark-paid", "teamScoped", "PAY-05"),
-  r("POST", "/api/periods/:id/unlock", "admin", "PAY-06"),
-  r("POST", "/api/adjustments", "admin", "PAY-07"),
+  r("POST", "/api/periods/:id/lock", "teamScoped", { fr: "PAY-04" }),
+  r("POST", "/api/periods/:id/mark-paid", "teamScoped", { fr: "PAY-05" }),
+  r("POST", "/api/periods/:id/unlock", "admin", { fr: "PAY-06" }),
+  r("POST", "/api/adjustments", "admin", { fr: "PAY-07" }),
   // §3 grants every role his own portal view; the endpoint is session-scoped
   // (§10.6 "employee(own)/any") — the role never widens the data.
-  r("GET", "/api/portal/weeks", "any", "PRT-01/03"),
-  r("GET", "/api/portal/weeks/:start", "any", "PRT-02"),
+  r("GET", "/api/portal/weeks", "any", { fr: "PRT-01/03" }),
+  r("GET", "/api/portal/weeks/:start", "any", { fr: "PRT-02" }),
   // FR-DSH-04 (employee trend) is v1.1 backlog; the v1 route is §10.6's
   // "supervisor(admin scope)/admin".
-  r("GET", "/api/export", "teamScoped", "EXP-01..05"),
-  r("GET", "/api/audit", "admin", "AUD-03"),
-  r("GET", "/api/dashboard/summary", "teamScoped", "DSH-01..03"),
+  r("GET", "/api/export", "teamScoped", { fr: "EXP-01..05" }),
+  r("GET", "/api/audit", "admin", { fr: "AUD-03" }),
+  r("GET", "/api/dashboard/summary", "teamScoped", { fr: "DSH-01..03" }),
   r("GET", "/api/health", "public", undefined),
 ];
 
 /** The §3 contract per actor: exact status for every (row, actor) pair.
- * `ok` is the allowed actors' handler outcome (guard passed). */
+ * `ok` is the allowed actors' handler outcome (guard passed). Planned rows
+ * pin the route's absence — 404 for every actor. */
 export function expectedFor(row: MatrixRow): Record<Actor, number> {
+  if (!row.live) {
+    const missing = 404;
+    return {
+      anonymous: missing,
+      employee: missing,
+      supervisorOwn: missing,
+      supervisorOther: missing,
+      admin: missing,
+    };
+  }
   const deny = 403;
   const ok = row.ok;
   switch (row.access) {
