@@ -11,6 +11,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
     "e2e": "turbo run e2e",
     "line-count": "turbo run line-count",
     "format": "prettier --write .",

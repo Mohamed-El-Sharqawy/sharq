@@ -1,8 +1,7 @@
-# CI pipeline — TESTING §12 stages 1-5, 7, 8 (stage 9 gates with the phases
-# that own them). apps/api's bun:test suites are Testcontainers-backed
-# (TESTING §7) and run inside the unit stage — Docker is available on hosted
-# runners; they split into a dedicated stage-6 job when api gains non-Docker
-# unit tests. Windows dev host / Linux CI: POSIX paths only.
+# CI pipeline — TESTING §12 stages 1-8 (stage 9 gates with the phases that
+# own them). Stage 6 integration runs the apps/api Testcontainers suites in
+# their own step inside the quality job (Docker is preinstalled on hosted
+# runners). Windows dev host / Linux CI: POSIX paths only.
 name: CI
 
 on:
@@ -21,7 +20,7 @@ permissions:
 
 jobs:
   quality:
-    name: "install -> lint -> line-count -> typecheck -> unit -> build"
+    name: "install -> lint -> line-count -> typecheck -> unit -> integration -> build"
     # Pinned, not ubuntu-latest: the label flips OS versions silently
     # (Ubuntu 26 migration 2026-10-19); upgrade deliberately instead.
     runs-on: ubuntu-24.04
@@ -66,10 +65,15 @@ jobs:
       - name: typecheck
         run: pnpm turbo run typecheck
 
-      # Stage 5 — unit: bun:test (packages + api) and Vitest (web) in parallel.
-      # apps/api suites are Testcontainers-backed (see header note).
+      # Stage 5 — unit: bun:test (packages + api services, Docker-free) and
+      # Vitest (web) in parallel.
       - name: unit tests
         run: pnpm turbo run test
+
+      # Stage 6 — integration: apps/api Testcontainers Postgres suites
+      # (one container per suite file; see TESTING §7).
+      - name: integration tests
+        run: pnpm turbo run test:integration
 
       # Stage 7 — build: web (RRv7 SPA via vite) + api (bun build).
       - name: build

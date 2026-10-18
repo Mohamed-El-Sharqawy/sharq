@@ -43,6 +43,9 @@
       ]
     },
     "test": {},
+    "test:integration": {
+      "inputs": ["tests/integration/**", "drizzle/**", "src/db/**"]
+    },
     "line-count": {
       "inputs": [
         "**/*.ts",
