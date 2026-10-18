@@ -8,9 +8,20 @@ test.describe("app shell", () => {
   test("renders the Arabic RTL shell at /", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar-EG");
     await expect(page).toHaveTitle(/شرق/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("شرق");
+  });
+
+  // SPEC §14.2: IBM Plex Sans Arabic self-hosted from @sharq/ui (§14.4 tokens
+  // defined once there) — proven via the computed font on the real page.
+  test("applies the self-hosted Arabic font from @sharq/ui", async ({ page }) => {
+    await page.goto("/");
+    await expect
+      .poll(() =>
+        page.locator("body").evaluate((el) => getComputedStyle(el).fontFamily),
+      )
+      .toContain("IBM Plex Sans Arabic");
   });
 
   test("axe scan on / reports zero critical violations", async ({ page }) => {
