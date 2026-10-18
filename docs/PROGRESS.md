@@ -5,14 +5,23 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** tasks 1–6 of 13 done (rows 1,2,3,4,5,7) — Playwright live: chromium-only, `desktop-RTL` (1280×720) + `mobile` (Pixel 7) projects, axe addon, trace `retain-on-failure`; `pnpm e2e` (root→turbo, `cache:false`) green 4/4; red-proven (axe flags critical `button-name`, trace.zip retained). Full `turbo run lint typecheck test line-count --force` 23/23 green; prettier clean.
+- **Status:** tasks 1–7 of 14 done (rows 1–7; earlier ledger said "of 13" — recount, ROADMAP's 14 checkboxes win). CI live on **draft PR #1**: stages install→lint→line-count→typecheck→unit + e2e job; green, caches restore, failure path proven (artifact upload works). **Draft PR #1 exists for CI verification only — phase work continues; not «in review» until marked ready at phase end.**
 
 ## Next task
 
-- [ ] CHORE: CI pipeline skeleton running stages install→lint→line-count→typecheck→unit on every PR (TESTING §12)
-  - GitHub Actions workflow (`.github/workflows/ci.yml`): pnpm 10.15.1 + Node 24, turbo cache (TESTING §12 stage 1), stages in order lint→line-count→typecheck→unit (bun on `packages/*`+`apps/api`, vitest on web — parallel). Phase DoD also demands "E2E hello spec runs in CI": add an e2e job with `pnpm exec playwright install chromium` + browser cache, or defer consciously and log it. Windows dev host, Linux CI — keep paths POSIX.
+- [ ] IMPL: Vite + React Router v7 framework mode (SPA) + fs-routes folder routing + `_app` layout + 404/error boundaries (SPEC §8.1, §11)
+  - `apps/web` dirs exist (`app/routes, features, lib, styles, test, e2e`); react 19.3.1 already in catalog — `react-router` v7 (framework mode) + vite plugin are new deps to add. Root `pnpm build` gains web once `vite build` lands.
+  - TEMP hello-wiring duty due in this task: `e2e/hello.spec.ts` swaps `setContent` → `page.goto("/")`; `playwright.config.ts` gains `webServer` (vite dev on 5173) — e2e in CI then runs against a real server (already proven on setContent).
+  - Spec authority: SPEC §8.1 (app structure), §11 (screens/routes inventory: `_app` layout + 404/error boundaries).
 
 ## Session log (newest first)
+
+### 2026-10-18 — Phase 0 task 6 (row 6): CI pipeline skeleton
+- `.github/workflows/ci.yml`: `quality` job runs stages in order — install (pnpm via `packageManager`, Node 24 + pnpm store cache, setup-bun 1.2.21 = host, turbo cache: actions/cache sha-key + prefix restore) → lint → line-count → typecheck → unit (turbo parallelizes bun:test packages + vitest web). `e2e` job (needs quality): browser cache keyed on lockfile, `playwright install --with-deps chromium`, `pnpm e2e`, artifacts on failure. Triggers pull_request + push main + workflow_dispatch; per-ref concurrency cancel; `permissions: contents: read`. Stages 6/7/9 (integration/build/gates) deliberately absent — placeholders documented in the file header.
+- Runner pinned `ubuntu-24.04` (ubuntu-latest flips to Ubuntu 26 on 2026-10-19 — upgrades stay deliberate); actions on node24 majors (checkout v7, setup-node v7, cache v6, upload-artifact v7, pnpm/action-setup v6, setup-bun v2) after run 1 flagged Node-20 deprecation.
+- **Draft PR #1 opened early** (deviation, logged below): CI must run "on every PR", so the phase branch was pushed and its eventual PR opened as draft right after the workflow landed; marked ready at phase end.
+- Proven on GitHub: green run (quality 38s cold, e2e 43s cold, 4/4 specs) → turbo prefix-cache restore (quality 15s) + browser-cache restore → **deliberate red** (temp commit fails an e2e assertion): e2e job X with retries visible, `upload-artifact@v7` step ✓ + `playwright-artifacts` present on the run, quality job unaffected; reverted, green again. En-route lesson (cost one run): `toHaveText("شرق ")` PASSES against `شرق` — Playwright normalizes whitespace; first "failing" attempt was green and was reset off the branch.
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — Phase 0 task 5 (row 5): Playwright scaffold
 - Catalog grew: `@playwright/test` 1.64.1, `@axe-core/playwright` 4.14.0, `playwright-core` 1.64.1. `apps/web` devDeps (catalog:) + `e2e: playwright test` script; chromium v1248 (CfT 156) installed host-wide.
@@ -63,6 +72,10 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 - Initialized git + `.gitignore`; committed the documentation baseline (closing ritual step 3).
 
 ## Decisions & deviations
+
+- **Draft PR #1 opened mid-phase (2026-10-18, task 6):** the CI task demands the workflow run *on every PR*, so the phase's PR exists as a draft from task 6 onward and every phase-0 push exercises CI against it. NOT «in review»: marked ready only when all 14 tasks are ticked + DoD gates pass; Branch & PR workflow otherwise unchanged.
+- **CI runner pinned `ubuntu-24.04`; actions on node24 majors; bun 1.2.21 in CI (2026-10-18, task 6):** `ubuntu-latest` silently flips to Ubuntu 26 on 2026-10-19 (actions/runner-images#14748) — pin now, upgrade deliberately. Node-20-targeting action majors were bumped the same day (deprecation warning). CI bun = host bun so the bun:test runtime never drifts from dev.
+- **CI skeleton excludes TESTING §12 stages 6/7/9 (2026-10-18, task 6):** integration (Testcontainers) starts with Phase 1 suites; the build stage joins when web's `vite build` lands (row 8); gates (coverage thresholds + traceability + inventory parity) come with the phases that own them (traceability script per TESTING §16 when the first FR tests land). Roadmap task text scopes stages 1–5; the e2e job was added, not deferred, per the Phase DoD line "E2E hello spec runs in CI".
 
 - **`playwright-core` pinned in catalog (2026-10-18, task 5):** `@axe-core/playwright` peers on `playwright-core`, which pnpm's `auto-install-peers` would float to *latest* on fresh installs — drifting from `@playwright/test`. Pinning `playwright-core` 1.64.1 (lockstep release line with `@playwright/test`) in the catalog + web devDeps keeps both resolvable at one exact version.
 - **e2e hello spec is `setContent`-based until the Vite task (2026-10-18, task 5):** no dev server exists yet, so the scaffold proof renders inline Arabic RTL HTML instead of `page.goto("/")`; `baseURL` is pre-wired and the webServer + goto swap is part of the Vite+RRv7 task (row 8). Tracked under the same TEMP hello-wiring grep marker.
