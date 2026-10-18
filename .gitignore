@@ -1,0 +1,18 @@
+# dependencies & builds
+node_modules/
+dist/
+.turbo/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# os / editor
+.DS_Store
+Thumbs.db
