@@ -21,6 +21,7 @@ import {
   ScrollRestoration,
   useRouteError,
 } from "react-router";
+import { ViewTransitionDirector } from "./lib/view-transition";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -42,7 +43,13 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      {/* SPEC §14.3: html[data-vt-dir] + fallback class for every route. */}
+      <ViewTransitionDirector />
+      <Outlet />
+    </>
+  );
 }
 
 // SPEC §11: one boundary at the root until screens grow their own.
@@ -52,7 +59,9 @@ export function ErrorBoundary() {
     <main>
       <h1>{notFound ? NOT_FOUND_TITLE : ERROR_TITLE}</h1>
       <p>{notFound ? NOT_FOUND_MESSAGE : ERROR_MESSAGE}</p>
-      <Link to="/">{HOME_LINK}</Link>
+      <Link to="/" viewTransition>
+        {HOME_LINK}
+      </Link>
     </main>
   );
 }

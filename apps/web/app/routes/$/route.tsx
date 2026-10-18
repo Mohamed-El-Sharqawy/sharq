@@ -9,7 +9,9 @@ export default function NotFound() {
     <main>
       <h1>{NOT_FOUND_TITLE}</h1>
       <p>{NOT_FOUND_MESSAGE}</p>
-      <Link to="/">{HOME_LINK}</Link>
+      <Link to="/" viewTransition>
+        {HOME_LINK}
+      </Link>
     </main>
   );
 }

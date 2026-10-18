@@ -11,7 +11,11 @@ import NotFound from "./routes/$/route";
 
 describe("SPEC §11 · routing skeleton", () => {
   it("dashboard placeholder renders the app name heading", () => {
-    render(<Dashboard />);
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       APP_NAME,
     );
@@ -20,7 +24,11 @@ describe("SPEC §11 · routing skeleton", () => {
   // @sharq/ui pipeline proof: the shadcn Button resolves through the
   // @sharq/ui/* alias and renders with its token classes.
   it("dashboard placeholder renders a shadcn button", () => {
-    render(<Dashboard />);
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole("button")).toHaveAttribute("data-slot", "button");
   });
 

@@ -8,3 +8,7 @@ export const NOT_FOUND_TITLE = "الصفحة دي مش موجودة";
 export const NOT_FOUND_MESSAGE = "اللينك ده مش موجود أو اتشال.";
 export const ERROR_TITLE = "حصل مشكلة";
 export const ERROR_MESSAGE = "جرب تاني، ولو المشكلة فضلت كلّم مدير النظام.";
+
+// RTL demo page (SPEC §14.3 vehicle, roadmap rows 12-13).
+export const DEMO_TITLE = "صفحة المعاينة";
+export const DEMO_LINK = "صفحة المعاينة";

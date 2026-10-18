@@ -4,16 +4,31 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
+type VtHit = { sel: string; media: string | null; animation: string };
 type VtCss = {
   slide: boolean;
   reducedMotionKills: boolean;
   fallbackFade: boolean;
 };
 
-// CSSOM scan: the motion contract lives in the compiled stylesheet.
-async function scanVtCss(page: Page): Promise<VtCss> {
+// CSSOM dump: rule selectors (+ their media context) from every stylesheet.
+async function dumpVtHits(page: Page): Promise<VtHit[]> {
   return page.evaluate(() => {
-    const out = { slide: false, reducedMotionKills: false, fallbackFade: false };
+    const hits: { sel: string; media: string | null; animation: string }[] = [];
+    const push = (sel: string, media: string | null, animation: string) => {
+      hits.push({ sel, media, animation });
+    };
+    const readMedia = (mediaRule: CSSMediaRule) => {
+      for (const inner of Array.from(mediaRule.cssRules)) {
+        if (inner instanceof CSSStyleRule) {
+          push(
+            inner.selectorText,
+            mediaRule.conditionText,
+            inner.style.animation,
+          );
+        }
+      }
+    };
     for (const sheet of Array.from(document.styleSheets)) {
       let rules: CSSRuleList;
       try {
@@ -22,39 +37,41 @@ async function scanVtCss(page: Page): Promise<VtCss> {
         continue;
       }
       for (const rule of Array.from(rules)) {
-        if (rule instanceof CSSStyleRule) {
-          if (rule.selectorText.includes("::view-transition-old(sharq-page)")) {
-            out.slide = true;
-          }
-          if (rule.selectorText.includes(".vt-fallback .vt-page-root")) {
-            out.fallbackFade = true;
-          }
-        }
-        if (
-          rule instanceof CSSMediaRule &&
-          rule.conditionText.includes("prefers-reduced-motion")
-        ) {
-          for (const inner of Array.from(rule.cssRules)) {
-            if (
-              inner instanceof CSSStyleRule &&
-              inner.selectorText.includes("::view-transition") &&
-              inner.style.animation.includes("none")
-            ) {
-              out.reducedMotionKills = true;
-            }
-          }
-        }
+        if (rule instanceof CSSMediaRule) readMedia(rule);
+        else if (rule instanceof CSSStyleRule)
+          push(rule.selectorText, null, rule.style.animation);
       }
     }
-    return out;
+    return hits;
   });
 }
 
-test.describe("SPEC §14.3 · view transitions", () => {
+// CSSOM scan: the SPEC §14.3 motion contract lives in the stylesheet.
+function scanVtCss(hits: VtHit[]): VtCss {
+  const reduced = hits.filter((h) =>
+    h.media?.includes("prefers-reduced-motion"),
+  );
+  return {
+    slide: hits.some((h) =>
+      h.sel.includes("::view-transition-old(sharq-page)"),
+    ),
+    fallbackFade: hits.some((h) =>
+      h.sel.includes(".vt-fallback .vt-page-root"),
+    ),
+    reducedMotionKills: reduced.some(
+      (h) =>
+        h.sel.includes("::view-transition") && h.animation.includes("none"),
+    ),
+  };
+}
+
+test.describe("SPEC §14.3 · view transitions · page root & travel direction", () => {
   test("page root carries the view-transition name and the motion CSS ships", async ({
     page,
   }) => {
     await page.goto("/demo");
+    // SPA mode: the page root exists only after client hydration.
+    await page.locator(".vt-page-root").first().waitFor();
     const name = await page.evaluate(() => {
       const el = document.querySelector(".vt-page-root");
       return el
@@ -62,7 +79,7 @@ test.describe("SPEC §14.3 · view transitions", () => {
         : "";
     });
     expect(name.trim()).toBe("sharq-page");
-    const css = await scanVtCss(page);
+    const css = scanVtCss(await dumpVtHits(page));
     expect(css.slide).toBe(true);
     expect(css.reducedMotionKills).toBe(true);
     expect(css.fallbackFade).toBe(true);
@@ -86,17 +103,22 @@ test.describe("SPEC §14.3 · view transitions", () => {
     );
     // <Link viewTransition> really went through document.startViewTransition.
     await expect
-      .poll(() => page.evaluate(() => (window as { __vtCalls?: number }).__vtCalls ?? 0))
+      .poll(() =>
+        page.evaluate(() => (window as { __vtCalls?: number }).__vtCalls ?? 0),
+      )
       .toBeGreaterThan(0);
     await page.goBack();
     await expect(page.locator("html")).toHaveAttribute("data-vt-dir", "back");
   });
+});
 
+test.describe("SPEC §14.3 · view transitions · fallback & reduced motion", () => {
   test("fallback: opacity fade when startViewTransition is absent", async ({
     page,
   }) => {
     await page.addInitScript(() => {
-      delete Document.prototype.startViewTransition;
+      delete (Document.prototype as { startViewTransition?: unknown })
+        .startViewTransition;
     });
     await page.goto("/demo");
     await expect(page.locator("html")).toHaveClass(/vt-fallback/);
@@ -111,10 +133,13 @@ test.describe("SPEC §14.3 · view transitions", () => {
     page,
   }) => {
     await page.addInitScript(() => {
-      delete Document.prototype.startViewTransition;
+      delete (Document.prototype as { startViewTransition?: unknown })
+        .startViewTransition;
     });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/demo");
+    // SPA mode: wait for hydration before reading computed styles.
+    await page.locator(".vt-page-root").first().waitFor();
     const animation = await page.evaluate(() => {
       const el = document.querySelector(".vt-page-root");
       return el ? getComputedStyle(el).animationName : "";
@@ -127,8 +152,8 @@ test.describe("SPEC §14.3 · view transitions", () => {
   }) => {
     await page.goto("/demo");
     const results = await new AxeBuilder({ page }).analyze();
-    expect(
-      results.violations.filter((v) => v.impact === "critical"),
-    ).toEqual([]);
+    expect(results.violations.filter((v) => v.impact === "critical")).toEqual(
+      [],
+    );
   });
 });

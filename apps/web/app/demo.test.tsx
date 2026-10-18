@@ -18,7 +18,9 @@ describe("SPEC §14.3/§9.9 · RTL demo route", () => {
   it("renders the three shared state components on one page", () => {
     renderDemo();
     expect(document.querySelector('[data-slot="empty-state"]')).not.toBeNull();
-    expect(document.querySelector('[data-slot="loading-state"]')).not.toBeNull();
+    expect(
+      document.querySelector('[data-slot="loading-state"]'),
+    ).not.toBeNull();
     expect(document.querySelector('[data-slot="error-state"]')).not.toBeNull();
   });
 

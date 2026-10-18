@@ -138,3 +138,100 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * SPEC §14.3 — view transitions. In Phase 0 only the page root carries
+ * a view-transition-name (the sheet card joins when Sheet lands).
+ * Travel direction arrives as html[data-vt-dir] (set by the app's
+ * ViewTransitionDirector from history idx deltas); slides are
+ * start↔end and RTL-aware through the direction vars below. The
+ * fallback (opacity fade) applies when document.startViewTransition is
+ * absent → html.vt-fallback. prefers-reduced-motion disables ALL
+ * motion, both paths.
+ * ------------------------------------------------------------------ */
+:root {
+  --vt-duration: 200ms; /* motion token: defined once, swapped here only */
+  --vt-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Forward = deeper history idx. LTR: the new page enters from the
+     right and the old exits to the left; RTL mirrors both. */
+  --vt-forward-in: 12%;
+  --vt-forward-out: -12%;
+}
+
+:root[dir="rtl"] {
+  --vt-forward-in: -12%;
+  --vt-forward-out: 12%;
+}
+
+.vt-page-root {
+  view-transition-name: sharq-page;
+}
+
+::view-transition-old(sharq-page) {
+  animation: var(--vt-duration) var(--vt-easing) both sharq-vt-exit-forward;
+}
+
+::view-transition-new(sharq-page) {
+  animation: var(--vt-duration) var(--vt-easing) both sharq-vt-enter-forward;
+}
+
+html[data-vt-dir="back"]::view-transition-old(sharq-page) {
+  animation-name: sharq-vt-exit-back;
+}
+
+html[data-vt-dir="back"]::view-transition-new(sharq-page) {
+  animation-name: sharq-vt-enter-back;
+}
+
+@keyframes sharq-vt-enter-forward {
+  from {
+    opacity: 0;
+    transform: translateX(var(--vt-forward-in));
+  }
+}
+
+@keyframes sharq-vt-exit-forward {
+  to {
+    opacity: 0;
+    transform: translateX(var(--vt-forward-out));
+  }
+}
+
+@keyframes sharq-vt-enter-back {
+  from {
+    opacity: 0;
+    transform: translateX(var(--vt-forward-out));
+  }
+}
+
+@keyframes sharq-vt-exit-back {
+  to {
+    opacity: 0;
+    transform: translateX(var(--vt-forward-in));
+  }
+}
+
+/* SPEC §14.3 fallback: no View Transitions API → opacity fade. */
+html.vt-fallback .vt-page-root {
+  animation: var(--vt-duration) var(--vt-easing) both sharq-vt-fade;
+}
+
+@keyframes sharq-vt-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* SPEC §14.3: reduced motion disables ALL motion. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  html.vt-fallback .vt-page-root {
+    animation: none !important;
+  }
+}

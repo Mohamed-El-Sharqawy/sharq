@@ -46,17 +46,20 @@ describe("SPEC §14.3 · view transitions", () => {
     });
 
     it("leaves the document unmarked when the API exists", () => {
-      const doc = document as Document & {
-        startViewTransition?: (cb?: () => void) => unknown;
-      };
-      doc.startViewTransition = () => ({ finished: Promise.resolve({}) });
+      // Shadow the prototype method with an own-property stub.
+      Object.defineProperty(document, "startViewTransition", {
+        value: () => ({ finished: Promise.resolve({}) }),
+        configurable: true,
+        writable: true,
+      });
       try {
         applyViewTransitionFallbackClass(document);
-        expect(
-          document.documentElement.classList.contains("vt-fallback"),
-        ).toBe(false);
+        expect(document.documentElement.classList.contains("vt-fallback")).toBe(
+          false,
+        );
       } finally {
-        delete doc.startViewTransition;
+        delete (document as { startViewTransition?: unknown })
+          .startViewTransition;
       }
     });
   });
