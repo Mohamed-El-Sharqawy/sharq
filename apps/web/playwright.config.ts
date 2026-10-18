@@ -1,6 +1,6 @@
 // apps/web — Playwright E2E per TESTING §2.1/§9: chromium-only, two projects
-// (desktop-RTL 1280x720 + mobile), trace viewer, axe addon.
-// The webServer lands with the Vite+RRv7 task; specs then use page.goto("/").
+// (desktop-RTL 1280x720 + mobile), trace viewer, axe addon. Specs drive the
+// real RRv7 dev server via page.goto (roadmap row 8).
 import {
   defineConfig,
   devices,
@@ -44,4 +44,13 @@ export default defineConfig({
       use: { ...devices["Pixel 7"], ...rtlContext },
     },
   ],
+  // Roadmap row 8: e2e runs against the real app server (react-router dev,
+  // port 5173). CI always boots its own; locally an existing dev server is
+  // reused so `pnpm e2e` is fast during development.
+  webServer: {
+    command: "pnpm run dev",
+    url: "http://localhost:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });
