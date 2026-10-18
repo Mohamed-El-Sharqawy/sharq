@@ -661,10 +661,10 @@ All request/response schemas are TypeBox objects in `@sharq/schemas`, referenced
 
 ### 10.7 Cross-cutting
 
-- **OpenAPI:** `@elysiajs/openapi` at `/openapi.json` + `/docs` (dev open; admin-gated in prod). **Type-safe client:** Eden Treaty in web from `type App` (§8.2 exception).
-- **Rate limiting:** `@elysiajs/rate-limit` — auth 10/min/IP, writes 120/min/user, reads 300/min/user; buckets env-tunable.
-- **Logging:** `pino` JSON (pretty in dev): request id, user id, method, path, status, duration; no PII beyond ids; `LOG_LEVEL` env.
-- **Env:** `@elysiajs/env` (TypeBox) — fail-fast boot. **Health:** DB round-trip check.
+- **OpenAPI:** `@elysiajs/openapi` at `/openapi.json` + `/docs` (Scalar frontend). Dev/test expose both; prod ships the spec only (docs frontend disabled — stricter than an admin gate; revisit if ops wants it behind login). **Type-safe client:** Eden Treaty in web from `type App` (§8.2 exception).
+- **Rate limiting:** `elysia-rate-limit` (community — the `@elysiajs/rate-limit` name this spec originally named was never published) — login 10/min/IP (§10.6 login row); the writes 120/min/user and reads 300/min/user buckets land with the routes they govern (Phase 2+); all buckets env-tunable.
+- **Logging:** `pino` JSON to stdout (pretty in dev via a `pino-pretty` pipe): request id, user id, method, path, status, duration; no PII beyond ids; `LOG_LEVEL` env.
+- **Env:** TypeBox-validated `parseEnv` fail-fast boot (`apps/api/src/lib/env.ts`; `@elysiajs/env` was never published — same contract, one in-repo function). **Health:** `GET /api/health` with a DB round-trip check.
 
 ---
 

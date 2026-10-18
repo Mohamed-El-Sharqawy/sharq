@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --watch src/index.ts | pino-pretty",
     "build": "bun build --target=bun src/index.ts --outdir=dist",
     "lint": "eslint .",
     "typecheck": "tsc -p .",
@@ -14,10 +14,14 @@
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
+    "@elysiajs/openapi": "catalog:",
+    "@sharq/locales": "workspace:*",
     "@sharq/schemas": "workspace:*",
     "@sinclair/typebox": "catalog:",
     "drizzle-orm": "catalog:",
     "elysia": "catalog:",
+    "elysia-rate-limit": "catalog:",
+    "pino": "catalog:",
     "postgres": "catalog:"
   },
   "devDependencies": {
@@ -27,6 +31,7 @@
     "@types/bun": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
+    "pino-pretty": "catalog:",
     "typescript": "catalog:"
   }
 }

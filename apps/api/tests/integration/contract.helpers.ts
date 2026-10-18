@@ -6,6 +6,7 @@
 // errors with precise messages; value assertions stay in the specs.
 import type { TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { API_ERROR_MESSAGES } from "@sharq/locales";
 import { type ApiErrorCode, ErrorEnvelope } from "@sharq/schemas";
 import { createApp, type App } from "../../src/app";
 import { createDrizzleAudit } from "../../src/lib/audit";
@@ -32,7 +33,10 @@ export const STATUS_BY_CODE: Record<ApiErrorCode, number> = {
 
 /** The §10.1 composition over a real container: real drizzle repo, the real
  * src-side audit writer, repo-borne teamScope check — the production wiring
- * (src/index.ts) against an ephemeral Postgres instead of the dev DB. */
+ * (src/index.ts) against an ephemeral Postgres instead of the dev DB. The
+ * login limiter is raised to 1000/min here so suites with many login probes
+ * never trip it; the production 10/min contract lives in its own suite
+ * (auth.contract.ratelimit.test.ts) against an un-overridden app. */
 export function createIntegrationApp(
   t: TestDb,
   opts: { secureCookies?: boolean } = {},
@@ -43,6 +47,8 @@ export function createIntegrationApp(
     audit: createDrizzleAudit(t.db),
     isTeamSupervisor: repo.isTeamSupervisor,
     secureCookies: opts.secureCookies,
+    rateLimit: { authPerMinute: 1000 },
+    dbCheck: async () => true,
   });
 }
 
@@ -97,9 +103,9 @@ export type Envelope = {
 };
 
 /** Parses an error response and asserts its full §10.4 contract: the fixed
- * status for the code, a JSON content-type, the envelope shape, and the
- * exact machine code. Returns the parsed envelope. Message strings are
- * deliberately not compared (TEMP error-map: row 12 swaps in Arabic). */
+ * status for the code, a JSON content-type, the envelope shape, the exact
+ * machine code, and (row 12+) the Arabic message from @sharq/locales.
+ * Returns the parsed envelope. */
 export async function expectEnvelope(
   res: Response,
   code: ApiErrorCode,
@@ -118,5 +124,9 @@ export async function expectEnvelope(
   assertSchema(ErrorEnvelope, body);
   if (body.error.code !== code)
     throw new Error(`envelope code: expected ${code}, got ${body.error.code}`);
+  if (body.error.message !== API_ERROR_MESSAGES[code])
+    throw new Error(
+      `envelope message: expected the locales map entry for ${code}, got "${body.error.message}"`,
+    );
   return body;
 }

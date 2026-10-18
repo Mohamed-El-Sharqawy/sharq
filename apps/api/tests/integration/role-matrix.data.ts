@@ -126,7 +126,9 @@ export const MATRIX: MatrixRow[] = [
   r("GET", "/api/export", "teamScoped", { fr: "EXP-01..05" }),
   r("GET", "/api/audit", "admin", { fr: "AUD-03" }),
   r("GET", "/api/dashboard/summary", "teamScoped", { fr: "DSH-01..03" }),
-  r("GET", "/api/health", "public", undefined),
+  // §10.7 cross-cutting landed with row 12: public, no session, DB
+  // round-trip check — the one non-auth row that shipped in Phase 1.
+  r("GET", "/api/health", "public", { live: true }),
 ];
 
 /** The §3 contract per actor: exact status for every (row, actor) pair.

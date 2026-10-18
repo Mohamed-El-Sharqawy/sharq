@@ -28,6 +28,7 @@ export function buildApp(admin: UserWithHash, secureCookies = false) {
     repo: makeRepo([{ ...admin }]).repo,
     audit,
     isTeamSupervisor,
+    dbCheck: async () => true,
     secureCookies,
   });
 }
@@ -35,7 +36,12 @@ export function buildApp(admin: UserWithHash, secureCookies = false) {
 /** App + its repo handle, for specs asserting repo-level effects. */
 export function buildAppWithRepo(admin: UserWithHash) {
   const repo = makeRepo([{ ...admin }]);
-  const app = createApp({ repo: repo.repo, audit, isTeamSupervisor });
+  const app = createApp({
+    repo: repo.repo,
+    audit,
+    isTeamSupervisor,
+    dbCheck: async () => true,
+  });
   return { app, repo };
 }
 
