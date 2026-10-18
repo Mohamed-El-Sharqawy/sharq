@@ -31,6 +31,9 @@ export type AuditEntry = {
   entityType: string;
   entityId: string;
   actorId?: string | null;
+  /** §15 old/new JSON — the before/after of the change (FR-AUD-01/02). */
+  oldValue?: unknown;
+  newValue?: unknown;
   note?: string | null;
   ip?: string | null;
 };

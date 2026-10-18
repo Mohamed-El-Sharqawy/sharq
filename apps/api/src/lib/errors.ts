@@ -1,9 +1,9 @@
 // SPEC §10.4 — the error envelope: every non-happy response is
-// `{ error: { code, message, details?, meta? } }` with a stable machine code
-// and its fixed HTTP status. Arabic messages arrive via @sharq/locales in the
-// row-12 error-map wiring — until then message carries the code
-// (TEMP error-map: swap message source in row 12, keep the codes stable).
+// `{ error: { code, message, details?, meta? } }` with a stable machine
+// code, its fixed HTTP status, and its Arabic message from @sharq/locales
+// (the ONLY home for interface strings, SPEC §9).
 import { status } from "elysia";
+import { API_ERROR_MESSAGES } from "@sharq/locales";
 import { type ApiErrorCode, type ErrorEnvelope } from "@sharq/schemas";
 
 // The code SET is owned by @sharq/schemas (§10.3 one source); this Record
@@ -34,7 +34,9 @@ export function apiError(
   details?: unknown,
   meta?: unknown,
 ): ErrorEnvelope {
-  return { error: { code, message: code, details, meta } };
+  return {
+    error: { code, message: API_ERROR_MESSAGES[code], details, meta },
+  };
 }
 
 /** A ready-to-return error response (status + envelope) for handlers/guards. */

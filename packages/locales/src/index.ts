@@ -1,12 +1,11 @@
 // @sharq/locales — i18next resources (ar-EG) + validation-error Arabic map (SPEC §8.1).
-// Arabic strings live ONLY here (SPEC §9). Real exports land with Phase 1.
-
-// TEMP hello-wiring export — proven by src/hello.test.ts; deleted when Phase 1
-// lands real exports (tracked in PROGRESS).
-export const runnerInfo = "bun";
+// Arabic strings live ONLY here (SPEC §9).
 
 // App-shell strings (routing skeleton, roadmap row 8).
 export * from "./app";
 
 // Shared state-component labels (SPEC §9.9, roadmap rows 10-11).
 export * from "./states";
+
+// §10.4 API error codes → Arabic messages (roadmap row 12).
+export * from "./errors";

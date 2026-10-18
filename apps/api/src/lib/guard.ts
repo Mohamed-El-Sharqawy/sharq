@@ -5,6 +5,7 @@
 // depth) and repositories take explicit scopes.
 import { Elysia } from "elysia";
 import type { AuthRole, AuthSession, AuthUser } from "../modules/auth/types";
+import type { RequestStore } from "./obs";
 import { apiErrorStatus } from "./errors";
 
 /** §10.2 verbatim: the session cookie name. */
@@ -37,7 +38,13 @@ export function createGuards(deps: GuardDeps) {
       // not a route response — envelope errors are contract-validated
       // test-side via the closed @sharq/schemas schemas; per-route Elysia
       // response schemas land when Eden is first consumed, Phase 2+).
-      resolve: async ({ cookie }: { cookie: Jar }): Promise<GuardContext> => {
+      resolve: async ({
+        cookie,
+        store,
+      }: {
+        cookie: Jar;
+        store: RequestStore;
+      }): Promise<GuardContext> => {
         const raw = cookie[SESSION_COOKIE]?.value;
         const token = typeof raw === "string" ? raw : undefined;
         if (!token) {
@@ -47,6 +54,8 @@ export function createGuards(deps: GuardDeps) {
         if (!found) {
           return apiErrorStatus("AUTH_REQUIRED") as unknown as GuardContext;
         }
+        // §10.7 request logging reads the id from the store — ids only.
+        store.userId = found.user.id;
         return { user: found.user, sessionToken: token };
       },
     },
