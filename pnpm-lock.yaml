@@ -32,6 +32,9 @@ importers:
       turbo:
         specifier: 2.11.9
         version: 2.11.9
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/eslint-config:
     dependencies:

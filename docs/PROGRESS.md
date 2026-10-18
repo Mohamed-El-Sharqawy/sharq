@@ -5,13 +5,20 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** tasks 1–2/13 done — monorepo skeleton green; `@sharq/tsconfig` bases (base/pkg/app) + `@sharq/eslint-config` flat config live, all §9.2/9.3 thresholds + §8.2 zones + §9.1 bans red-test-proven.
+- **Status:** tasks 1–3/13 done — monorepo skeleton, tsconfig bases + ESLint flat config, and the dual-enforced §9.2 line-count gate (script + exemptions + turbo task) all red-test-proven and green.
 
 ## Next task
 
-- [ ] CHORE: `tooling/check-line-count.mjs` + `.linecount-exemptions.json` + turbo `line-count` task (SPEC §9.2)
+- [ ] CHORE: bun:test runner wired in `packages/*` and `apps/api`; Vitest + jsdom + Testing Library in `apps/web` (TESTING §2.1)
 
 ## Session log (newest first)
+
+### 2026-10-18 — Phase 0 task 3: line-count gate (script + exemptions + turbo task)
+- `tooling/check-line-count.mjs` (Node, ~190 lines): counts non-blank/non-comment lines per SPEC §9.2 exactly — comment trivia comes from the TypeScript scanner (root devDep `typescript: catalog:`), so `//` in strings/URLs/templates is never a comment; code lines with trailing comments count; pure-comment and blank lines don't; CRLF + BOM safe. Scans the invoking workspace (cwd) recursively for `.ts/.tsx` (skips node_modules/dist/coverage/.turbo/.git), reports repo-relative paths.
+- `.linecount-exemptions.json` at root: strict shape `{exemptions: {path: {reason, reviewDate}}}`, starts empty (shadcn entries land with task 8). Validation is global (every package's run validates the whole list): non-POSIX/`..` paths, missing/extra keys, empty reason, non-real `YYYY-MM-DD` (round-trip check, rejects 2026-02-31), **expired review date = error**, stale entry (file gone) = error, under-limit entry = warning. Exempted over-limit files pass but are listed.
+- Wiring: `line-count` script (`node ../../tooling/check-line-count.mjs`) in schemas/payroll/locales/ui; turbo `line-count` inputs widened to `**/*.ts(x)` + the gate files themselves (formatting the script invalidated all caches — proven).
+- Red-test proven: 151-line plain fixture and a comment-exactness fixture (128 plain + trailing-comment + template-`//` + URL lines = exactly 151) both FAIL at exactly 151 — and ESLint `max-lines` independently reports 151 on the same file (dual gate, identical semantics); CRLF+BOM fixture at 150 passes, at 151 fails at 151. Exemption lifecycle: valid→exempt-listed, missing reason/extra key/backslash path/impossible date/non-date/broken JSON/wrong shape/missing file/past review date all FAIL; under-limit entry warns. All fixtures removed after; full `turbo run lint typecheck test line-count` 12/12 green; prettier clean.
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — Phase 0 task 2: tsconfig bases + ESLint flat config
 - `@sharq/tsconfig`: `base.json` (strict, `module: preserve`, `moduleResolution: bundler`, `verbatimModuleSyntax`, `noEmit`) + `pkg.json` + `app.json` (DOM + `react-jsx`); wired as devDep + `tsconfig.json` + `typecheck` script in schemas/payroll/locales/ui (ui adds DOM lib + jsx).
@@ -41,6 +48,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Decisions & deviations
 
+- **Expired exemption review dates fail the gate (2026-10-18, task 3):** SPEC §9.2 requires "reason + review date" per entry but doesn't state expiry behavior; the script treats `reviewDate < today` as an error (review → renew or remove). This is the anti-erosion teeth SPEC §18 risk table implies; interpretation logged here, SPEC text unchanged.
 - **ESLint 10 option spelling (2026-10-18, task 2):** SPEC §9.2 `max-lines` options updated from `ignoreBlankLines/ignoreComments` to `skipBlankLines/skipComments` — ESLint 10 renamed them, semantics identical. SPEC edited in the same session; threshold value (150, non-blank, non-comment) unchanged.
 - **TypeScript pinned 6.0.3, not 7.0.2 (2026-10-18, task 2):** typescript-eslint 8.71 hard-refuses TS 7 (native rewrite, unsupported until typescript-eslint#10940 lands). 6.0.3 is the newest line inside its peer range; single catalog line to bump later.
 
@@ -48,6 +56,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
+- **PowerShell 5.1 pitfall (hit 2026-10-18):** PS text pipelines (`Set-Content -Encoding Ascii/UTF8`) corrupt UTF-8 files containing `§`/`—` and add BOMs — it mangled a package header comment once; restored via `git checkout`. Edit files with the edit tool / node / git only.
 - Remote: https://github.com/Mohamed-El-Sharqawy/sharq (**public**). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
 - Do not attempt to read `color direction - image examle.jpg` (no vision support).
 - TypeScript pinned at **6.0.3** in the catalog (was briefly 7.0.2; see Decisions). Revisit when typescript-eslint supports TS ≥7.1.

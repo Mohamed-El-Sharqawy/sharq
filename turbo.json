@@ -29,8 +29,8 @@
     "test": {},
     "line-count": {
       "inputs": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
+        "**/*.ts",
+        "**/*.tsx",
         "../../tooling/check-line-count.mjs",
         "../../.linecount-exemptions.json"
       ]

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
     "@sinclair/typebox": "catalog:"
