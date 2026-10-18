@@ -54,8 +54,8 @@ graph LR
 - [x] TEST: migration tests — exclusion constraints reject overlapping memberships & rates; uniq(user, date) enforced (EC-11, EC-17, EC-40)
 - [x] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants) + root `db:generate/migrate/studio` scripts
 - [x] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
-- [ ] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
-- [ ] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
+- [x] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
+- [x] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
 - [ ] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)
 - [ ] IMPL: auth plugin (`login/logout/me/password`) + guard macros (`auth`/`role`/`teamScope`) green (SPEC §10.2)
 - [ ] TEST: contract tests for the 4 auth routes incl. error envelope codes (SPEC §10.4/10.6)
