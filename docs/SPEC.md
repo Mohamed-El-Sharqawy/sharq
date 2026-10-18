@@ -483,7 +483,7 @@ sharq/
 ### 8.4 Pipeline, caching, scripts, coexistence, deployment
 
 - `turbo.json` tasks: `dev` (persistent, cache:false) · `build` (web: vite build; api: `bun build --target=bun`) · `lint` · `typecheck` · `test` · `line-count` · `e2e`. Outputs cached; local cache in v1 (remote optional later).
-- Root scripts: `dev`, `build`, `lint`, `typecheck`, `test`, `e2e`, `line-count`, `format`, `db:generate | db:migrate | db:studio`, `seed`.
+- Root scripts: `dev`, `build`, `lint`, `typecheck`, `test`, `e2e`, `line-count`, `format`, `db:generate | db:migrate | db:studio`, `seed`, plus dev-container lifecycle `db:up | db:stop | db:reset` driving the root `compose.yaml` (local Docker Postgres with named volume `sharq_pgdata`; stop/start and up/down persist data, `db:reset` = `down -v` is the destructive one).
 - **Bun + Node coexistence:** pnpm is the only root package manager; every script invokes the right runtime explicitly (`bun run` inside `apps/api`, node/vite for web). Bun never runs web tooling and vice versa.
 - **pnpm catalog:** one `catalog:` block pins shared versions (react, typescript, typebox, tailwindcss, tanstack table/query/virtual, date-fns, i18next…).
 - **Env:** `apps/api/.env` (DATABASE_URL, SESSION_SECRET, PORT, NODE_ENV, LOG_LEVEL, RATE_LIMIT_*) validated at boot by `@elysiajs/env`; `apps/web/.env` (VITE_API_URL, default same-origin `/api`). No secrets in packages.

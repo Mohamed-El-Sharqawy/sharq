@@ -5,14 +5,22 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 0 — Monorepo, design system & test infrastructure
-- **Status:** tasks 1–11 of 14 done. **PR #1 (rows 1–7) was merged early by the client** (2026-10-18 10:11, merge commit e312b30) — phase work continues on the same branch, fast-forwarded to that merge; remaining rows 12–14 ride **draft PR #2** (`phase/0-foundation` → `main`, re-drafted after a stray ready_for_review). CI now runs stages install→lint→line-count→typecheck→unit→build (§12 stage 7 joined with row 8) + the e2e job; branch protection's required checks updated to the renamed job name (see session log).
+- **Status:** tasks 1–11 of 14 done (row 14 **partial**: dev Docker Postgres + `db:up/stop/reset` landed early on client request; drizzle `db:generate/migrate/studio` + `seed` still wait for Phase 1). **PR #1 (rows 1–7) was merged early by the client** (2026-10-18 10:11, merge commit e312b30) — phase work continues on the same branch, fast-forwarded to that merge; remaining rows 12–14 ride **draft PR #2** (`phase/0-foundation` → `main`, re-drafted after a stray ready_for_review). CI now runs stages install→lint→line-count→typecheck→unit→build (§12 stage 7 joined with row 8) + the e2e job; branch protection's required checks updated to the renamed job name (see session log).
 
 ## Next task
 
 - [ ] IMPL: view transitions + `prefers-reduced-motion` handling (SPEC §14.3)
-  - Rows 10–11 done this session; ui's vitest wiring exists. Row 13 (visual baseline) needs an RTL demo route — the state components' `data-slot` hooks are stable for it.
+  - Rows 10–11 done (ui vitest wiring exists). Row 13 (visual baseline) needs an RTL demo route — the state components' `data-slot` hooks are stable for it. Row 14 remainder (`db:generate/migrate/studio`, `seed`) waits for Phase 1's drizzle schema; the dev Postgres container itself is already up (`pnpm db:up`).
 
 ## Session log (newest first)
+
+### 2026-10-18 — client request: dev Postgres as Docker container with persistent volume (row 14, partial)
+- Client asked for the DB as a Docker container whose data survives stop/start. Matches SPEC §17 "dev (local Docker Postgres)" + §8.4 root scripts. SPEC §8.4 updated **first** (root-script line now includes `db:up | db:stop | db:reset` + the compose/volume contract).
+- Files: root `compose.yaml` (service `postgres:18-alpine`, container `sharq-db`, named volume `sharq_pgdata` with explicit `name:` so it never drifts with the project name, healthcheck `pg_isready` 5s/10×, `restart: unless-stopped` → auto-starts with Docker Desktop, env+port interpolated from root `.env` with defaults) + `.env.example` (dev-only creds sharq/sharq/sharq@5432; documents the `DATABASE_URL` derivation for Phase 1's `apps/api/.env`) + root scripts `db:up`/`db:stop`/`db:reset` (`down -v` = the only destructive lever). `.gitignore` already covered `.env`.
+- **En-route lesson (cost one restart loop): postgres 18+ official images refuse a volume at `/var/lib/postgresql/data`** — data lives in `/var/lib/postgresql/<major>/docker` and the mount goes at the parent `/var/lib/postgresql` (docker-library/postgres#37, pg_upgrade-friendly). Fixed + recorded in Decisions.
+- **Persistence proven end-to-end:** inserted probe row 42 → `pnpm db:stop` → started again → row present; then `docker compose down` (container destroyed, volume kept) → `up` → row still present; `Test-NetConnection localhost:5432` ✓ (host port mapping for the future api). Container left running+healthy; volume `sharq_pgdata` holds the data dir.
+- Gates: prettier clean (compose.yaml + package.json); no TS touched (lint/typecheck/test unaffected — verified nothing else changed). Row 14 stays unticked until `db:generate/migrate/studio` + `seed` land with Phase 1's drizzle schema.
+- CHORE only — no FR/EC ids.
 
 ### 2026-10-18 — PR #2 unblocked (branch protection) + Phase 0 tasks 10+11 (rows 10–11): shared state components
 - **Client report:** PR #2 showed `install -> lint -> line-count -> typecheck -> unit — Expected — Waiting for status to be reported` forever. Root cause: task 8 renamed the CI quality job (`unit` → `unit -> build`) but branch protection still required the OLD check name — a check no workflow reports never resolves. Fix: PATCH `branches/main/protection/required_status_checks` to require `install -> lint -> line-count -> typecheck -> unit -> build` + `e2e: Playwright chromium` (strict kept). PR #2 → MERGEABLE/CLEAN immediately. Lesson recorded below (Decisions): renaming a CI job = protection update in the same session.
@@ -107,6 +115,8 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Decisions & deviations
 
+- **Dev Postgres = `postgres:18-alpine` on the 18+ parent mount (2026-10-18, row 14 partial):** image major pinned (SPEC §20 A16 forbids version-specific SQL anyway; minors ride the tag, majors are deliberate). The **volume mounts at `/var/lib/postgresql`**, not the pre-18 `/var/lib/postgresql/data` — 18+ images hard-fail on the old layout (data dir is now `/var/lib/postgresql/18/docker`; this also enables `pg_upgrade --link` later). Volume explicitly named `sharq_pgdata`; `db:reset` (`down -v`) is the only data-destroying command — stop/start and plain up/down persist.
+- **`db:*` lifecycle scripts vs SPEC's drizzle scripts (2026-10-18):** SPEC §8.4 originally listed only `db:generate/migrate/studio` + `seed`; the container lifecycle (`db:up/stop/reset`) was added to SPEC in the same session (SPEC → code order). drizzle's scripts wait for Phase 1; Testcontainers (integration suites) stays ephemeral-per-suite by design — the persistent volume is the DEV database only.
 - **Renaming a CI job requires a branch-protection update in the same session (2026-10-18, rows 10–11 session):** task 8 renamed the quality job to `install -> lint -> line-count -> typecheck -> unit -> build` but protection still required the old `… -> unit` name, so PR #2 hung on "Expected — Waiting for status to be reported" while both real checks were green. Standing rule: any CI job-name change updates `required_status_checks` contexts immediately (gh api PATCH …/branches/main/protection/required_status_checks).
 - **`packages/ui` state components live in one `states.tsx` (2026-10-18, row 11):** three tiny presentational components share a file + spec (`states.test.tsx`); they grow into separate files only if one crosses the refactor threshold. shadcn registry items keep their per-file convention (button.tsx).
 
@@ -146,6 +156,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Environment notes
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
+- **Dev Postgres (2026-10-18):** `pnpm db:up` / `db:stop` / `db:reset` (root `compose.yaml`); container `sharq-db`, volume `sharq_pgdata`, creds sharq/sharq db sharq on localhost:5432 (override via root `.env` from `.env.example`). Docker Desktop must be running — start with `Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"` and wait for `docker info`.
 - **`main` is branch-protected (2026-10-18):** PR + strict required CI checks — `install -> lint -> line-count -> typecheck -> unit -> build` + `e2e: Playwright chromium` (updated 2026-10-18 after the job rename; see Decisions); no direct/force pushes, no deletions — admins included. Direct pushes to `main` (incl. docs-only) are rejected; docs-only changes ride a `docs/*` branch + PR. Merging requires both CI checks green on the PR's latest commit.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
 - **PowerShell 5.1 pitfall (hit 2026-10-18):** PS text pipelines (`Set-Content -Encoding Ascii/UTF8`) corrupt UTF-8 files containing `§`/`—` and add BOMs — it mangled a package header comment once; restored via `git checkout`. Edit files with the edit tool / node / git only.
