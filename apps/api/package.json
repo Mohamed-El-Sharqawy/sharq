@@ -8,6 +8,7 @@
     "build": "bun build --target=bun src/index.ts --outdir=dist",
     "lint": "eslint .",
     "typecheck": "tsc -p .",
+    "test": "bun test",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "devDependencies": {

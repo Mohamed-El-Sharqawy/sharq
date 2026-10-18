@@ -169,6 +169,9 @@ importers:
       '@sharq/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/bun':
+        specifier: 'catalog:'
+        version: 1.2.23(@types/react@19.3.0)
       eslint:
         specifier: 'catalog:'
         version: 10.13.0
@@ -188,6 +191,9 @@ importers:
       '@sharq/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/bun':
+        specifier: 'catalog:'
+        version: 1.2.23(@types/react@19.3.0)
       eslint:
         specifier: 'catalog:'
         version: 10.13.0
@@ -207,6 +213,9 @@ importers:
       '@sharq/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/bun':
+        specifier: 'catalog:'
+        version: 1.2.23(@types/react@19.3.0)
       eslint:
         specifier: 'catalog:'
         version: 10.13.0

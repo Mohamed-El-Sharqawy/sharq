@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p .",
+    "test": "vitest run",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "devDependencies": {
