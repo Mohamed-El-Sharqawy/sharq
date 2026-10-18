@@ -16,6 +16,12 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Session log (newest first)
 
+### 2026-10-18 — main branch protected
+- Classic branch protection applied to `main` via API: PR required before merging, **strict** required status checks = both CI jobs (`install -> lint -> line-count -> typecheck -> unit` + `e2e: Playwright chromium`, matched against the real check-run names on PR #1), `enforce_admins` on, force pushes and deletions blocked, no push restrictions.
+- Deliberate: **0 required approving reviews** — single-account repo; PRs are authored by the client's own account and GitHub bars self-approval, so a 1-review requirement would deadlock every merge. The human review step stays procedural per the Branch & PR workflow; CI is the enforced gate.
+- Consequence handled: the old "docs-only commits to main directly" allowance is now impossible (admins included) — AGENTS.md session boot 4 updated: docs-only protocol changes ride a small `docs/*` branch + PR.
+- CHORE only — no FR/EC ids.
+
 ### 2026-10-18 — Phase 0 task 6 (row 6): CI pipeline skeleton
 - `.github/workflows/ci.yml`: `quality` job runs stages in order — install (pnpm via `packageManager`, Node 24 + pnpm store cache, setup-bun 1.2.21 = host, turbo cache: actions/cache sha-key + prefix restore) → lint → line-count → typecheck → unit (turbo parallelizes bun:test packages + vitest web). `e2e` job (needs quality): browser cache keyed on lockfile, `playwright install --with-deps chromium`, `pnpm e2e`, artifacts on failure. Triggers pull_request + push main + workflow_dispatch; per-ref concurrency cancel; `permissions: contents: read`. Stages 6/7/9 (integration/build/gates) deliberately absent — placeholders documented in the file header.
 - Runner pinned `ubuntu-24.04` (ubuntu-latest flips to Ubuntu 26 on 2026-10-19 — upgrades stay deliberate); actions on node24 majors (checkout v7, setup-node v7, cache v6, upload-artifact v7, pnpm/action-setup v6, setup-bun v2) after run 1 flagged Node-20 deprecation.
@@ -93,6 +99,7 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Environment notes
 
 - Windows host; Bun only for `apps/api`; Node/pnpm for web + root; Docker required for integration tests.
+- **`main` is branch-protected (2026-10-18):** PR + strict required CI checks; no direct/force pushes, no deletions — admins included. Direct pushes to `main` (incl. docs-only) are rejected; docs-only changes ride a `docs/*` branch + PR. Merging requires both CI checks green on the PR's latest commit.
 - Git initialized 2026-10-18 (documentation baseline committed). If commits fail on missing identity, set a repo-local `git config user.name/user.email` and note it here.
 - **PowerShell 5.1 pitfall (hit 2026-10-18):** PS text pipelines (`Set-Content -Encoding Ascii/UTF8`) corrupt UTF-8 files containing `§`/`—` and add BOMs — it mangled a package header comment once; restored via `git checkout`. Edit files with the edit tool / node / git only.
 - Remote: https://github.com/Mohamed-El-Sharqawy/sharq (**public**). `gh` CLI installed and authenticated as Mohamed-El-Sharqawy — **PR flow is ACTIVE**.
