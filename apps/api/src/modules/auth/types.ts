@@ -9,6 +9,7 @@ export type AuthUser = {
   id: string;
   username: string;
   phone: string | null;
+  displayNameAr: string;
   role: AuthRole;
   isActive: boolean;
   mustChangePassword: boolean;
@@ -56,6 +57,12 @@ export interface AuthRepo {
   findSessionByTokenHash(
     tokenHash: string,
   ): Promise<{ session: AuthSession; user: AuthUser } | undefined>;
+  /** Live user by id (soft-deleted resolve to nothing) — change-password path. */
+  findUserById(id: string): Promise<AuthUserWithHash | undefined>;
+  /** FR-AUTH-05/07: swap the hash and clear must_change_password. */
+  updatePassword(id: string, passwordHash: string, now: Date): Promise<void>;
+  /** §10.2 teamScope: live team whose supervisor_id is this user. */
+  isTeamSupervisor(userId: string, teamId: string): Promise<boolean>;
   touchSession(id: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
   revokeSession(id: string, revokedAt: Date): Promise<void>;
 }
@@ -79,3 +86,14 @@ export type LoginResult =
   // account — no user enumeration (FR-AUTH-01, FR-AUTH-08, EC-25).
   | { ok: false; code: "INVALID_CREDENTIALS" }
   | { ok: false; code: "RATE_LIMITED"; retryAfterSeconds: number };
+
+/** FR-AUTH-07 — input + result; wrong current password is the only
+ * failure (owner-only call, no enumeration concern). */
+export type ChangePasswordInput = {
+  userId: string;
+  current: string;
+  next: string;
+};
+
+export type ChangePasswordResult =
+  { ok: true } | { ok: false; code: "INVALID_CREDENTIALS" };

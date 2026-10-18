@@ -6,13 +6,14 @@
 import { defaultSettingValues } from "@sharq/schemas";
 import { LOCKOUT_MAX_FAILURES, LOCKOUT_MINUTES } from "./lockout";
 import { login, type LoginDeps } from "./login";
+import { changePassword } from "./password-change";
 import {
   isSessionExpired,
   logout,
   resolveSession,
   sessionExpiry,
 } from "./session";
-import type { LoginInput } from "./types";
+import type { ChangePasswordInput, LoginInput } from "./types";
 
 export type AuthServiceDeps = LoginDeps;
 
@@ -26,6 +27,8 @@ export type {
   AuthSession,
   AuthUser,
   AuthUserWithHash,
+  ChangePasswordInput,
+  ChangePasswordResult,
   LoginInput,
   LoginResult,
 } from "./types";
@@ -36,6 +39,8 @@ export function createAuthService(deps: AuthServiceDeps) {
   const sessions = { repo: deps.repo, idleMinutes };
   return {
     login: (input: LoginInput, now: Date) => login(deps, input, now),
+    changePassword: (input: ChangePasswordInput, now: Date) =>
+      changePassword(deps, input, now),
     resolveSession: (token: string, now: Date) =>
       resolveSession(sessions, token, now),
     logout: (token: string, now: Date) => logout(sessions, token, now),

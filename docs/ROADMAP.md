@@ -56,8 +56,8 @@ graph LR
 - [x] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
 - [x] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
 - [x] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
-- [ ] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)
-- [ ] IMPL: auth plugin (`login/logout/me/password`) + guard macros (`auth`/`role`/`teamScope`) green (SPEC §10.2)
+- [x] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)
+- [x] IMPL: auth plugin (`login/logout/me/password`) + guard macros (`auth`/`role`/`teamScope`) green (SPEC §10.2)
 - [ ] TEST: contract tests for the 4 auth routes incl. error envelope codes (SPEC §10.4/10.6)
 - [ ] TEST: role-matrix table-driven test harness wired (mirrors SPEC §3) — starts failing for missing routes
 - [ ] IMPL: error envelope + Arabic error map wiring + audit helper green (SPEC §10.4, §15)

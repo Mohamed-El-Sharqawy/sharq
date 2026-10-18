@@ -4,3 +4,4 @@
 export * from "./settings/types";
 export * from "./settings/registry";
 export * from "./settings/cross-field";
+export * from "./auth";

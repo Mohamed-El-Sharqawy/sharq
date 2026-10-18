@@ -20,6 +20,7 @@ export function makeUser(overrides: Partial<UserWithHash> = {}): UserWithHash {
     id: crypto.randomUUID(),
     username: "ahmed",
     phone: "+201000000003",
+    displayNameAr: "أحمد",
     role: "employee",
     isActive: true,
     mustChangePassword: false,
@@ -36,6 +37,36 @@ export type StoredSession = {
   expiresAt: Date;
   revokedAt: Date | null;
 };
+
+function storedSession(input: {
+  userId: string;
+  tokenHash: string;
+  lastSeenAt: Date;
+  expiresAt: Date;
+}): StoredSession {
+  return {
+    id: crypto.randomUUID(),
+    userId: input.userId,
+    tokenHash: input.tokenHash,
+    lastSeenAt: input.lastSeenAt,
+    expiresAt: input.expiresAt,
+    revokedAt: null,
+  };
+}
+
+/** FR-AUTH-05/07 semantics: swap the hash, clear must_change_password. */
+function applyPasswordUpdate(
+  users: UserWithHash[],
+  calls: { updated: { id: string; passwordHash: string; at: Date }[] },
+  update: { id: string; passwordHash: string; at: Date },
+) {
+  calls.updated.push(update);
+  const row = users.find((u) => u.id === update.id);
+  if (row) {
+    row.passwordHash = update.passwordHash;
+    row.mustChangePassword = false;
+  }
+}
 
 export type AuditSpy = {
   entries: AuditEntry[];
@@ -60,6 +91,7 @@ export function makeRepo(users: UserWithHash[]) {
     insertSession: [] as Parameters<AuthRepo["insertSession"]>[0][],
     touchSession: [] as { id: string; lastSeenAt: Date; expiresAt: Date }[],
     revoked: [] as { id: string; revokedAt: Date }[],
+    updated: [] as { id: string; passwordHash: string; at: Date }[],
   };
 
   const stripHash = (u: UserWithHash): AuthUser => {
@@ -74,16 +106,18 @@ export function makeRepo(users: UserWithHash[]) {
         (u) => u.username === identifier || u.phone === identifier,
       );
     },
+    async findUserById(id) {
+      return users.find((u) => u.id === id);
+    },
+    async updatePassword(id, passwordHash, at) {
+      applyPasswordUpdate(users, calls, { id, passwordHash, at });
+    },
+    async isTeamSupervisor() {
+      return false;
+    },
     async insertSession(input) {
       calls.insertSession.push(input);
-      const row: StoredSession = {
-        id: crypto.randomUUID(),
-        userId: input.userId,
-        tokenHash: input.tokenHash,
-        lastSeenAt: input.lastSeenAt,
-        expiresAt: input.expiresAt,
-        revokedAt: null,
-      };
+      const row = storedSession(input);
       sessions.set(input.tokenHash, row);
       return row;
     },

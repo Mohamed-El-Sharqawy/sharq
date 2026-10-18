@@ -6,9 +6,15 @@ export function hashPassword(password: string): Promise<string> {
   return Bun.password.hash(password, { algorithm: "argon2id" });
 }
 
-export function verifyPassword(
+export async function verifyPassword(
   password: string,
   hash: string,
 ): Promise<boolean> {
-  return Bun.password.verify(password, hash);
+  try {
+    return await Bun.password.verify(password, hash);
+  } catch {
+    // A malformed/corrupt stored hash is not a match — it must never turn
+    // into a 500 on the login or change-password path.
+    return false;
+  }
 }

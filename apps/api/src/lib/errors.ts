@@ -1,0 +1,53 @@
+// SPEC §10.4 — the error envelope: every non-happy response is
+// `{ error: { code, message, details?, meta? } }` with a stable machine code
+// and its fixed HTTP status. Arabic messages arrive via @sharq/locales in the
+// row-12 error-map wiring — until then message carries the code
+// (TEMP error-map: swap message source in row 12, keep the codes stable).
+import { status } from "elysia";
+
+// §10.4 verbatim — code → HTTP status. Fixed in code with this citation;
+// §5.2 defines no error-code settings.
+const ENVELOPE_STATUS = {
+  AUTH_REQUIRED: 401,
+  AUTH_FORBIDDEN: 403,
+  VALIDATION_FAILED: 422,
+  NOT_FOUND: 404,
+  CONFLICT_VERSION: 409,
+  SETTINGS_CHANGED: 409,
+  EDIT_WINDOW_CLOSED: 409,
+  PERIOD_LOCKED: 409,
+  PERIOD_PAID: 409,
+  AMOUNT_OUT_OF_BOUNDS: 422,
+  REASON_REQUIRED: 422,
+  RATE_LIMITED: 429,
+  DUPLICATE: 409,
+  INTERNAL: 500,
+} as const;
+
+export type ApiErrorCode = keyof typeof ENVELOPE_STATUS;
+
+export type ErrorEnvelope = {
+  error: {
+    code: ApiErrorCode;
+    message: string;
+    details?: unknown;
+    meta?: unknown;
+  };
+};
+
+export function apiError(
+  code: ApiErrorCode,
+  details?: unknown,
+  meta?: unknown,
+): ErrorEnvelope {
+  return { error: { code, message: code, details, meta } };
+}
+
+/** A ready-to-return error response (status + envelope) for handlers/guards. */
+export function apiErrorStatus(
+  code: ApiErrorCode,
+  details?: unknown,
+  meta?: unknown,
+) {
+  return status(ENVELOPE_STATUS[code], apiError(code, details, meta));
+}

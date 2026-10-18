@@ -14,12 +14,16 @@ import {
   type UserWithHash,
 } from "./helpers";
 
-const user = (overrides: Partial<UserWithHash> = {}) =>
-  makeUser({ passwordHash: "old-hash", ...overrides });
+const user = async (overrides: Partial<UserWithHash> = {}) =>
+  makeUser({
+    // Real argon2id hash — the service must VERIFY against it.
+    passwordHash: await Bun.password.hash("pw"),
+    ...overrides,
+  });
 
-describe("FR-AUTH-07 · change own password", () => {
+describe("FR-AUTH-07 · change own password (credentials)", () => {
   it("given the correct current password, when changed, then the stored hash is replaced and the change is audited", async () => {
-    const u = user();
+    const u = await user();
     const { repo, calls } = makeRepo([u]);
     const audit = makeAudit();
     const result = await changePassword(
@@ -44,7 +48,7 @@ describe("FR-AUTH-07 · change own password", () => {
   });
 
   it("given a wrong current password, when changed, then INVALID_CREDENTIALS returns and nothing is written", async () => {
-    const u = user();
+    const u = await user();
     const { repo, calls } = makeRepo([u]);
     const audit = makeAudit();
     const result = await changePassword(
@@ -58,7 +62,7 @@ describe("FR-AUTH-07 · change own password", () => {
   });
 
   it("given an unknown user id, when changed, then the same generic failure returns", async () => {
-    const { repo, calls } = makeRepo([user()]);
+    const { repo, calls } = makeRepo([await user()]);
     const audit = makeAudit();
     const result = await changePassword(
       { repo, audit },
@@ -69,9 +73,11 @@ describe("FR-AUTH-07 · change own password", () => {
     expect(calls.updated).toHaveLength(0);
     expect(audit.entries).toHaveLength(0);
   });
+});
 
+describe("FR-AUTH-07 · change own password (sessions + round-trip)", () => {
   it("given a live session, when the password changes, then no session is revoked or touched (other devices stay logged in)", async () => {
-    const u = user();
+    const u = await user();
     const { repo, calls, sessions } = makeRepo([u]);
     await repo.insertSession({
       userId: u.id,
@@ -92,7 +98,7 @@ describe("FR-AUTH-07 · change own password", () => {
   });
 
   it("given the change succeeded, when the user logs in, then the new password works and the old one does not", async () => {
-    const u = user({ passwordHash: await Bun.password.hash("old-pw") });
+    const u = await user({ passwordHash: await Bun.password.hash("old-pw") });
     const { repo } = makeRepo([u]);
     const deps = {
       repo,

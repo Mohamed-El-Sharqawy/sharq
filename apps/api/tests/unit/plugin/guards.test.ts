@@ -9,6 +9,7 @@ import {
   type GuardDeps,
 } from "../../../src/lib/guard";
 import type { AuthUser, AuthSession } from "../../../src/modules/auth/types";
+import { json, type ErrBody } from "./helpers";
 
 const T0 = new Date("2026-10-18T10:00:00Z");
 
@@ -70,7 +71,7 @@ describe("§10.2 · guard.auth", () => {
   it("given no cookie, when a guarded route is hit, then 401 AUTH_REQUIRED (envelope shape)", async () => {
     const res = await app(deps(admin)).handle(req("/probe/me"));
     expect(res.status).toBe(401);
-    const body = await res.json();
+    const body = await json<ErrBody>(res);
     expect(body.error.code).toBe("AUTH_REQUIRED");
     // The Arabic message wiring is row 12 (SPEC §10.4) — shape only here.
     expect(typeof body.error.message).toBe("string");
@@ -84,7 +85,7 @@ describe("§10.2 · guard.auth", () => {
   it("given a live session, when a guarded route is hit, then the user is on the context (no passwordHash)", async () => {
     const res = await app(deps(admin)).handle(req("/probe/me", "good-token"));
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = await json<{ username: string }>(res);
     expect(body.username).toBe("sayed");
     expect(body).not.toHaveProperty("passwordHash");
   });
@@ -96,7 +97,7 @@ describe("§10.2 · guard.role", () => {
       req("/probe/admin", "good-token"),
     );
     expect(res.status).toBe(403);
-    expect((await res.json()).error.code).toBe("AUTH_FORBIDDEN");
+    expect((await json<ErrBody>(res)).error.code).toBe("AUTH_FORBIDDEN");
   });
 
   it("given the required role, when the route is hit, then 200", async () => {
