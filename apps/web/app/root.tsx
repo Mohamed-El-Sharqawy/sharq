@@ -1,6 +1,7 @@
-// App document shell (SPEC §8.1/§11): every route renders inside it.
-// lang="ar" + dir="rtl" are global; Arabic strings come from @sharq/locales
-// only (SPEC §9). Styles land with roadmap row 9 (Tailwind v4 tokens).
+// App document shell (SPEC §8.1/§11/§14): every route renders inside it.
+// lang="ar-EG" + dir="rtl" are global (SPEC §14.1); Arabic strings come from
+// @sharq/locales only (SPEC §9); tokens + fonts from @sharq/ui (SPEC §14.4).
+import "./styles/app.css";
 import {
   APP_NAME,
   ERROR_MESSAGE,
@@ -23,7 +24,7 @@ import {
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar-EG" dir="rtl">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

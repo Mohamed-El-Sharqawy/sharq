@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles/*": "./src/styles/*",
+    "./components/*": "./src/components/*",
+    "./lib/*": "./src/lib/*",
+    "./hooks/*": "./src/hooks/*"
   },
   "scripts": {
     "lint": "eslint .",
@@ -13,7 +17,11 @@
   },
   "dependencies": {
     "@sharq/locales": "workspace:*",
-    "@sharq/schemas": "workspace:*"
+    "@sharq/schemas": "workspace:*",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "tailwind-merge": "catalog:",
+    "tw-animate-css": "catalog:"
   },
   "peerDependencies": {
     "react": "catalog:",
@@ -25,6 +33,7 @@
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }
