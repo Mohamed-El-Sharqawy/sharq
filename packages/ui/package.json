@@ -13,6 +13,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc -p .",
+    "test": "vitest run",
     "line-count": "node ../../tooling/check-line-count.mjs"
   },
   "dependencies": {
@@ -30,11 +31,17 @@
   "devDependencies": {
     "@sharq/eslint-config": "workspace:*",
     "@sharq/tsconfig": "workspace:*",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "eslint": "catalog:",
+    "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwindcss": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

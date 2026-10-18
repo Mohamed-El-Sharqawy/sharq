@@ -7,3 +7,6 @@ export const runnerInfo = "bun";
 
 // App-shell strings (routing skeleton, roadmap row 8).
 export * from "./app";
+
+// Shared state-component labels (SPEC §9.9, roadmap rows 10-11).
+export * from "./states";
