@@ -20,13 +20,27 @@ export const AuthUserRole = Type.Union([
   Type.Literal("admin"),
 ]);
 
-/** The public user shape every auth route returns (never the hash). */
-export const AuthUserResponse = Type.Object({
-  id: Type.String(),
-  username: Type.String(),
-  phone: Type.Union([Type.String(), Type.Null()]),
-  displayNameAr: Type.String(),
-  role: AuthUserRole,
-  mustChangePassword: Type.Boolean(),
-});
+/** The public user shape every auth route returns (never the hash).
+ * additionalProperties is closed so an internal-field leak fails
+ * validation. */
+export const AuthUserResponse = Type.Object(
+  {
+    id: Type.String(),
+    username: Type.String(),
+    phone: Type.Union([Type.String(), Type.Null()]),
+    displayNameAr: Type.String(),
+    role: AuthUserRole,
+    /** Surfaced so a mid-session deactivation is visible to the client. */
+    isActive: Type.Boolean(),
+    mustChangePassword: Type.Boolean(),
+  },
+  { additionalProperties: false },
+);
 export type AuthUserResponse = Static<typeof AuthUserResponse>;
+
+/** Login / me response body (§10.6: `{user}`). */
+export const AuthUserBody = Type.Object(
+  { user: AuthUserResponse },
+  { additionalProperties: false },
+);
+export type AuthUserBody = Static<typeof AuthUserBody>;

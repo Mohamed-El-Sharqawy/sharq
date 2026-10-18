@@ -4,6 +4,11 @@
 // row-12 error-map wiring — until then message carries the code
 // (TEMP error-map: swap message source in row 12, keep the codes stable).
 import { status } from "elysia";
+import { type ApiErrorCode, type ErrorEnvelope } from "@sharq/schemas";
+
+// The code SET is owned by @sharq/schemas (§10.3 one source); this Record
+// must cover exactly that union — a missing or extra key fails typecheck.
+export type { ApiErrorCode, ErrorEnvelope };
 
 // §10.4 verbatim — code → HTTP status. Fixed in code with this citation;
 // §5.2 defines no error-code settings.
@@ -22,18 +27,7 @@ const ENVELOPE_STATUS = {
   RATE_LIMITED: 429,
   DUPLICATE: 409,
   INTERNAL: 500,
-} as const;
-
-export type ApiErrorCode = keyof typeof ENVELOPE_STATUS;
-
-export type ErrorEnvelope = {
-  error: {
-    code: ApiErrorCode;
-    message: string;
-    details?: unknown;
-    meta?: unknown;
-  };
-};
+} as const satisfies Record<ApiErrorCode, number>;
 
 export function apiError(
   code: ApiErrorCode,

@@ -61,10 +61,12 @@ describe("FR-AUTH-01 · POST /api/auth/login — success contract", () => {
   });
 
   it("given a successful login, when the Set-Cookie is inspected, then the §10.2 flags hold and the session cookie carries no Max-Age", async () => {
-    const setCookie = (await post({
-      identifier: user.username,
-      password: PASSWORD,
-    })).headers.get("set-cookie")!;
+    const setCookie = (
+      await post({
+        identifier: user.username,
+        password: PASSWORD,
+      })
+    ).headers.get("set-cookie")!;
     expect(setCookie).toContain("HttpOnly");
     expect(setCookie).toContain("SameSite=Lax");
     expect(setCookie).toContain("Path=/");
@@ -76,7 +78,9 @@ describe("FR-AUTH-01 · POST /api/auth/login — success contract", () => {
     const token = cookieValueFrom(
       await post({ identifier: user.username, password: PASSWORD }),
     );
-    const rows = await t.query<{ token_hash: string; revoked_at: Date | null }[]>`
+    const rows = await t.query<
+      { token_hash: string; revoked_at: Date | null }[]
+    >`
       select token_hash, revoked_at from sessions
       where user_id = ${user.id} and token_hash = ${sha256Hex(token)}`;
     expect(rows).toHaveLength(1);

@@ -6,8 +6,8 @@
 // errors with precise messages; value assertions stay in the specs.
 import type { TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { ErrorEnvelope, type ApiErrorCode } from "@sharq/schemas";
-import type { App } from "../../src/app";
+import { type ApiErrorCode, ErrorEnvelope } from "@sharq/schemas";
+import { createApp, type App } from "../../src/app";
 import { createDrizzleAudit } from "../../src/lib/audit";
 import { createDrizzleAuthRepo } from "../../src/modules/auth/repository";
 import type { TestDb } from "./helpers";
@@ -59,7 +59,8 @@ export function apiCall(
   const headers: Record<string, string> = {};
   if (opts.body !== undefined) headers["content-type"] = "application/json";
   if (opts.cookie) headers.cookie = `sharq_session=${opts.cookie}`;
-  const raw = typeof opts.body === "string" ? opts.body : JSON.stringify(opts.body);
+  const raw =
+    typeof opts.body === "string" ? opts.body : JSON.stringify(opts.body);
   return app.handle(
     new Request(`http://localhost${path}`, {
       method: opts.method ?? "GET",
@@ -110,7 +111,9 @@ export async function expectEnvelope(
     );
   const type = res.headers.get("content-type") ?? "";
   if (!type.startsWith("application/json"))
-    throw new Error(`${code} contract: expected application/json, got "${type}"`);
+    throw new Error(
+      `${code} contract: expected application/json, got "${type}"`,
+    );
   const body = (await res.json()) as Envelope;
   assertSchema(ErrorEnvelope, body);
   if (body.error.code !== code)
