@@ -49,8 +49,8 @@ graph LR
 
 **Goal:** schema with all history-safety constraints + working sessions + the layered module pattern proven.
 
-- [ ] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
-- [ ] IMPL: `@sharq/schemas` settings registry green
+- [x] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
+- [x] IMPL: `@sharq/schemas` settings registry green
 - [ ] TEST: migration tests — exclusion constraints reject overlapping memberships & rates; uniq(user, date) enforced (EC-11, EC-17, EC-40)
 - [ ] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants) + root `db:generate/migrate/studio` scripts
 - [ ] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
