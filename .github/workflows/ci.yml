@@ -94,6 +94,13 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # Row 13: F-01 runs the FULL stack — the api webServer boots with bun
+      # (pinned to the host/quality-job version), and global-setup starts the
+      # ephemeral e2e Postgres via docker (preinstalled on hosted runners).
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
       # Browser binaries keyed on the lockfile (it pins @playwright/test).
       - name: Playwright browser cache
         uses: actions/cache@v6
@@ -107,7 +114,9 @@ jobs:
       - name: Install chromium + system deps
         run: pnpm --filter @sharq/web exec playwright install --with-deps chromium
 
-      # Stage 8 (skeleton scope): hello spec only until the Vite webServer lands.
+      # Stage 8 (TESTING §9): F-01 full-stack — Playwright boots the api
+      # (bun) + web dev server; global-setup brings up the ephemeral seeded
+      # e2e Postgres. Includes axe + visual baselines.
       - name: Run E2E
         run: pnpm e2e
 

@@ -56,13 +56,30 @@ export default defineConfig({
       use: { ...devices["Pixel 7"], ...rtlContext },
     },
   ],
-  // Roadmap row 8: e2e runs against the real app server (react-router dev,
-  // port 5173). CI always boots its own; locally an existing dev server is
-  // reused so `pnpm e2e` is fast during development.
-  webServer: {
-    command: "pnpm run dev",
-    url: "http://localhost:5173",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  // Row 13: full-stack F-01 — ephemeral e2e Postgres (migrated + seeded)
+  // before the servers, torn down after; the api boots against it and the
+  // web dev server proxies /api to it (mirrors prod Traefik /api routing).
+  globalSetup: "./e2e/global-setup.ts",
+  globalTeardown: "./e2e/global-teardown.ts",
+  webServer: [
+    {
+      command: "pnpm --filter @sharq/api exec bun src/index.ts",
+      url: "http://localhost:3000/api/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      // webServer.env REPLACES the child environment (no PATH etc.) —
+      // spread process.env and override only what the e2e stack needs.
+      env: {
+        ...process.env,
+        DATABASE_URL: "postgresql://sharq:sharq@localhost:5434/sharq",
+        PORT: "3000",
+      },
+    },
+    {
+      command: "pnpm run dev",
+      url: "http://localhost:5173",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });
