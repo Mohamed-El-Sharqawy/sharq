@@ -4,12 +4,13 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Current position
 
-- **Phase:** 1 — Data model & auth (goal: schema with all history-safety constraints + working sessions + the layered module pattern proven)
-- **Status:** **All 13/13 rows done (2026-10-19)** — row 12 (error map/env/pino/rate-limit/openapi/health) + row 13 (F-01 full-stack e2e on Neon, /login screen, vt-flake fix #4). Phase DoD evidence: auth e2e green (28 specs local incl. F-01 ×2 projects), role-matrix harness green, full gate 27/27, integration 109 specs. **Phase 1 — in review (PR #3, marked ready).**
+- **Phase:** 2 — Admin: users & teams (goal: full user/team/membership lifecycle with effective-dated memberships)
+- **Status:** **Phase 1 complete (2026-10-19)** — PR #3 merged (`76b8e69`), tagged `phase-1`, release published. Protocol change recorded (implement-first, PR #5 draft, awaiting client merge). **Next session starts Phase 2** after merging PR #5.
 
 ## Next task
 
-- Attend PR #3 per the Branch & PR workflow: address requested changes only; when `gh pr view 3` shows merged → record «Phase 1 complete (date)», tag `phase-1` + release, cut `phase/2-users-teams` from fresh main (first row: membership range-math units).
+1. Merge PR #5 (docs: implement-first protocol) — then `git fetch; git switch main; git pull` and cut `phase/2-users-teams` + draft PR with the Phase 2 checklist.
+2. First Phase 2 work (implement-first per the new protocol — no red-first tests): the membership-range-math scope of rows 1–2 (FR-ADM-03/04/05) — service units land AFTER implementation as the phase's test pass.
 
 ## Session log (newest first)
 
