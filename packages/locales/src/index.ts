@@ -9,3 +9,6 @@ export * from "./states";
 
 // §10.4 API error codes → Arabic messages (roadmap row 12).
 export * from "./errors";
+
+// /login screen strings (SPEC §11, roadmap row 13).
+export * from "./login";

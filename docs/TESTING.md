@@ -183,6 +183,8 @@ Arabic UI strings are asserted exactly as written in SPEC §2 (no partial matche
 
 Plus, every run: axe scan per route (zero critical), visual baselines per key screen (desktop RTL + mobile), one keyboard-only grid navigation pass (arrows/Enter/Esc/Tab per SPEC §14.4).
 
+**Full-stack backing (Phase 1, row 13):** F-01 and later flows run against the real api (bun, :3000) + web dev server (:5173, `/api` proxied — mirrors prod Traefik routing), backed by the shared Neon Postgres: `e2e/global-setup.ts` re-applies migrations + seed (both idempotent) before the servers boot. No local container is involved. Locally the connection string lives in gitignored `apps/api/.env`; CI injects it as the `NEON_DATABASE_URL` secret (`DATABASE_URL` env on the e2e step — env vars beat `.env` under bun). The api's integration suites stay Testcontainers-based (§7 isolation; CI runners provide Docker).
+
 **Visual-baseline policy** (wired in Phase 0, row 13):
 
 - Goldens live in `<spec>.spec.ts-snapshots/` next to each spec and are **committed**; Playwright auto-suffixes each file with project + platform (`-desktop-RTL-linux` / `-mobile-win32`), so each OS keeps its own golden — never compare across renderers.

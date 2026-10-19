@@ -115,10 +115,13 @@ jobs:
         run: pnpm --filter @sharq/web exec playwright install --with-deps chromium
 
       # Stage 8 (TESTING §9): F-01 full-stack — Playwright boots the api
-      # (bun) + web dev server; global-setup brings up the ephemeral seeded
-      # e2e Postgres. Includes axe + visual baselines.
+      # (bun) + web dev server against the shared Neon Postgres
+      # (NEON_DATABASE_URL secret; global-setup migrates + seeds). Includes
+      # axe + visual baselines.
       - name: Run E2E
         run: pnpm e2e
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
 
       # TESTING §9: snapshot goldens are COMMITTED, never generated on the
       # fly. A missing baseline makes Playwright write it in-run (attempt 1

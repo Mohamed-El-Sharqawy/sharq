@@ -1,6 +1,8 @@
 // apps/web — Playwright E2E per TESTING §2.1/§9: chromium-only, two projects
 // (desktop-RTL 1280x720 + mobile), trace viewer, axe addon. Specs drive the
-// real RRv7 dev server via page.goto (roadmap row 8).
+// real RRv7 dev server via page.goto (roadmap row 8); row 13 boots the FULL
+// stack against the shared Neon Postgres (api + web; global-setup migrates
+// and seeds — idempotent).
 import {
   defineConfig,
   devices,
@@ -56,22 +58,21 @@ export default defineConfig({
       use: { ...devices["Pixel 7"], ...rtlContext },
     },
   ],
-  // Row 13: full-stack F-01 — ephemeral e2e Postgres (migrated + seeded)
-  // before the servers, torn down after; the api boots against it and the
-  // web dev server proxies /api to it (mirrors prod Traefik /api routing).
+  // Row 13: Neon-backed e2e — global-setup migrates + seeds before the
+  // servers; the api resolves DATABASE_URL itself (apps/api/.env locally,
+  // the NEON_DATABASE_URL secret's env var in CI — no secrets committed).
   globalSetup: "./e2e/global-setup.ts",
-  globalTeardown: "./e2e/global-teardown.ts",
   webServer: [
     {
       command: "pnpm --filter @sharq/api exec bun src/index.ts",
-      url: "http://localhost:3000/api/health",
+      url: "http://127.0.0.1:3000/api/health",
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
       // webServer.env REPLACES the child environment (no PATH etc.) —
-      // spread process.env and override only what the e2e stack needs.
+      // spread process.env; in CI that carryon includes the secret-derived
+      // DATABASE_URL (env vars beat .env files under bun).
       env: {
         ...process.env,
-        DATABASE_URL: "postgresql://sharq:sharq@localhost:5434/sharq",
         PORT: "3000",
       },
     },

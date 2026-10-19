@@ -26,6 +26,7 @@ test.describe("F-01 · admin login (AUTH-01, DSH-01)", () => {
   }) => {
     await page.goto("/login");
     await login(page, "Sharq#2026");
+    await expect(page).toHaveURL(/\/$/);
     await expect(
       page.getByRole("button", { name: DASHBOARD_TITLE }),
     ).toBeVisible();
@@ -45,15 +46,15 @@ test.describe("F-01 · admin login (AUTH-01, DSH-01)", () => {
   }) => {
     await page.goto("/login");
     const results = await new AxeBuilder({ page }).analyze();
-    const critical = results.violations.filter(
-      (v) => v.impact === "critical",
-    );
+    const critical = results.violations.filter((v) => v.impact === "critical");
     expect(critical).toEqual([]);
   });
 
   test("visual baseline · /login", async ({ page }) => {
     await page.goto("/login");
     await page.getByRole("button", { name: LOGIN_SUBMIT }).waitFor();
+    // Visual-baseline policy (TESTING §9): never bake the fallback font.
+    await page.evaluate(() => document.fonts.ready);
     await expect(page).toHaveScreenshot();
   });
 });

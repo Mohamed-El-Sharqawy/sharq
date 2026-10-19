@@ -23,7 +23,10 @@ const app = createApp({
     try {
       await db.execute(sql`select 1`);
       return true;
-    } catch {
+    } catch (error) {
+      // A 503 with no reason in the logs cost a day of e2e debugging —
+      // always surface WHY the round-trip failed.
+      logger.warn({ error: String(error) }, "health db check failed");
       return false;
     }
   },
