@@ -8,7 +8,10 @@ type PgErrorInfo = { code?: string; constraint?: string };
 export function pgErrorInfo(error: unknown, depth = 5): PgErrorInfo {
   if (depth === 0 || !isRecord(error)) return {};
   const code = readString(error.code);
-  const constraint = readString(error.constraint);
+  // postgres.js names the backend's constraint field constraint_name;
+  // accept the plain spelling too so either driver shape maps.
+  const constraint =
+    readString(error.constraint) ?? readString(error.constraint_name);
   if (code !== undefined || constraint !== undefined) {
     return { code, constraint };
   }
