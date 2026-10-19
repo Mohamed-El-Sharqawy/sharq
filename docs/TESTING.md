@@ -61,15 +61,17 @@ API and packages run natively on Bun (the same runtime as production), so bun:te
 
 ---
 
-## 4. TDD workflow (mandatory scope)
+## 4. Test workflow
 
-### 4.1 The loop
+> **Client decision 2026-10-19 (SPEC §20.1), effective Phase 2 onward: implement first, test after.** The red-first loop below is no longer required. §4.2's inventory remains the binding scope of what must HAVE tests by each phase's end — the tests are written once the phase's implementation is complete, then made green together with the phase's DoD gates. No PR merges with red/skipped tests (unchanged). Quality duty shifts forward: with no failing test to catch drift early, implementation sessions must read the SPEC rows they code against and cover the edge cases the tests would have pinned.
+
+### 4.1 The loop (Phase 0–1 history; retained for reference)
 
 1. **Red** — write the smallest failing test that expresses the next acceptance criterion or edge case. Run it. Watch it fail (for the right reason).
 2. **Green** — write the minimum implementation that passes.
 3. **Refactor** — clean up while staying green (this is where SPEC §9 principles get applied).
 
-### 4.2 What must be test-first
+### 4.2 What must have tests (scope inventory; order per §4 — Phase 2+: written after implementation)
 
 - All `@sharq/payroll` functions (math, resolution, periods, holidays).
 - All `@sharq/schemas` registry defaults, cross-field validators, amount normalizer, error-map entries.

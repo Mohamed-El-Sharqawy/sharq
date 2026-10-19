@@ -23,7 +23,7 @@ You are building the app described in `docs/SPEC.md` on the plan in `docs/ROADMA
 
 ## Working rules (pointers, not summaries — the docs carry the detail)
 
-- TDD is mandatory: red → green → refactor, scope in TESTING §4; tests are named after FR-\*/EC-\* ids.
+- **Test order (client decision 2026-10-19, Phase 2 onward): implement first, test after — no TDD red-first loop.** Build the phase's implementation directly, then write its tests (scope = TESTING §4.2 inventory; names = FR-*/EC-* ids) and get them green with the phase gates before the PR. Conscious implementation is mandatory in TDD's place: read the SPEC rows before coding, cover their edge cases deliberately, keep lint/typecheck/line-count green throughout.
 - No source file over 150 non-blank, non-comment lines (SPEC §9.2).
 - No hard-coded business value: every number/list/enum is a SPEC §5 settings row or marked "fixed in code" with a reason.
 - Money is integer minor units; Arabic strings live only in `@sharq/locales`; all other standards in SPEC §9.

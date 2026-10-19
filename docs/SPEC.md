@@ -917,6 +917,7 @@ Pure, unit-tested; RHF is not used in the grid (cell editing is reducer-driven; 
 | — | Eden Treaty | Fixed by client: Eden + Elysia for the type-safe client |
 | — | Theme | "Like the attached image" — image exists in repo but **could not be analyzed** (no image input in this environment); tokens pending description (A1) |
 | — | **Quality model (post-spec instruction)** | **TDD mandatory; unit + integration + E2E fully automated (Playwright chosen over Cypress — decision record in TESTING.md §2.2); goal: no repeated manual testing or review cycles** |
+| — | **Test order (2026-10-19, supersedes the TDD-first part of the row above from Phase 2 onward)** | **Implement first, test after**: no red-first/TDD loop; a phase's implementation is built first and its tests are written once that implementation is complete. Tests still exist for everything TESTING §4.2 lists, are still named after FR-*/EC-* ids, and must be green with the phase's coverage/DoD gates before the PR merges. Conscious implementation replaces the red-first safety net: read the SPEC rows first, handle their edge cases explicitly. Reason: client token/quota budget. |
 
 ### 20.2 Assumptions (Question | Assumption | Alternative | Impact if wrong)
 
