@@ -1,6 +1,6 @@
 # Roadmap — شرق (Sharq)
 
-Phased plan optimized for finishing fast, with **TDD baked in**: tasks are tagged and ordered — `TEST` (write the failing test first), `IMPL` (make it green), `E2E` (end-to-end flow), `CHORE` (tooling/infra). Every task references SPEC FR/EC ids and is sized for **one working session** (~half a day). Companion docs: [SPEC.md](SPEC.md) · [TESTING.md](TESTING.md).
+Phased plan optimized for finishing fast, with **test coverage baked in**: tasks are tagged — `TEST` (tests for the named scope), `IMPL` (implementation), `E2E` (end-to-end flow), `CHORE` (tooling/infra). **Order changed 2026-10-19 (client decision, SPEC §20.1): from Phase 2 onward, implement first — each phase's `TEST` rows are written after its `IMPL` rows complete, then green together before the PR.** Every task references SPEC FR/EC ids and is sized for **one working session** (~half a day). Companion docs: [SPEC.md](SPEC.md) · [TESTING.md](TESTING.md).
 
 **Global Definition of Done (applies to every phase):** all stage gates green (TESTING.md §12) · coverage gates met (§11) · traceability script passes (FR/EC ids covered) · no lint/line-count violations · phase flows pass in CI · **phase branch pushed, PR opened, merged by the client** (AGENTS.md Branch & PR workflow).
 
@@ -238,7 +238,7 @@ graph LR
 
 ## Working agreements
 
-1. Tests before implementation for everything in TESTING §4.2; no PR merges with red/skipped tests.
+1. **Test order (2026-10-19, client decision): from Phase 2, implementation comes first and each phase's tests are written after its implementation is complete.** The tests still cover everything TESTING §4.2 lists; **no PR merges with red/skipped tests** (unchanged).
 2. Every PR lists the FR/EC ids it covers; the traceability gate backs this mechanically.
 3. Bugs get a failing test first, referencing the EC id (or adding a new EC row to SPEC §16 in the same PR).
 4. Phase DoDs are cumulative: earlier phases' gates keep running on every later PR.

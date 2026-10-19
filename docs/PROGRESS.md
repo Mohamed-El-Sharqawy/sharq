@@ -4,14 +4,19 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 
 ## Current position
 
-- **Phase:** 1 — Data model & auth (goal: schema with all history-safety constraints + working sessions + the layered module pattern proven)
-- **Status:** **All 13/13 rows done (2026-10-19)** — row 12 (error map/env/pino/rate-limit/openapi/health) + row 13 (F-01 full-stack e2e on Neon, /login screen, vt-flake fix #4). Phase DoD evidence: auth e2e green (28 specs local incl. F-01 ×2 projects), role-matrix harness green, full gate 27/27, integration 109 specs. **Phase 1 — in review (PR #3, marked ready).**
+- **Phase:** 2 — Admin: users & teams (goal: full user/team/membership lifecycle with effective-dated memberships)
+- **Status:** **Phase 1 complete (2026-10-19)** — PR #3 merged (`76b8e69`), tagged `phase-1`, release published. Protocol change recorded (implement-first, PR #5 draft, awaiting client merge). **Next session starts Phase 2** after merging PR #5.
 
 ## Next task
 
-- Attend PR #3 per the Branch & PR workflow: address requested changes only; when `gh pr view 3` shows merged → record «Phase 1 complete (date)», tag `phase-1` + release, cut `phase/2-users-teams` from fresh main (first row: membership range-math units).
+1. Merge PR #5 (docs: implement-first protocol) — then `git fetch; git switch main; git pull` and cut `phase/2-users-teams` + draft PR with the Phase 2 checklist.
+2. First Phase 2 work (implement-first per the new protocol — no red-first tests): the membership-range-math scope of rows 1–2 (FR-ADM-03/04/05) — service units land AFTER implementation as the phase's test pass.
 
 ## Session log (newest first)
+
+### 2026-10-19 — client decision recorded: no TDD from Phase 2; implement first, test after
+- **Client instruction (quota-driven):** test-first/TDD loops burn too much of the z.ai weekly token quota — from Phase 2 onward the agent implements directly and writes each phase's tests after its implementation is complete. Recorded durably in AGENTS.md (working rules — the line every session reads), SPEC §20.1 (decisions table, superseding the TDD-first part of the quality-model row), TESTING §4 (order inverted; §4.2 inventory remains the binding have-tests-by-phase-end scope) and ROADMAP (header + working agreement #1). **Unchanged:** tests still exist for everything §4.2 lists, still named after FR-*/EC-* ids, still green with phase DoD/coverage gates before any PR; no red/skipped tests at merge; Phase 0–1 suites keep running (cumulative). **New duty in TDD's place:** conscious implementation — SPEC rows read before coding, edge cases handled deliberately, lint/typecheck/line-count green throughout. Sessions should also stay lean generally (fewer exploratory loops) per the same budget concern.
+- Rides `docs/no-tdd-from-phase-2` (main is protected): merge before cutting `phase/2-users-teams`.
 
 ### 2026-10-19 — Phase 1 rows 12–13 finished + dev/e2e DB → Neon; Phase 1 complete, PR #3 ready
 - **Row 12 (committed by the prior session, `6864eb0` red → `124026b` green):** Arabic error map in `@sharq/locales` (`errors.ts`, 14 §10.4 codes; api's `lib/errors.ts` now `API_ERROR_MESSAGES[code]` at construction), `parseEnv` §10.7 fail-fast boot, pino request logging, login 10/min/IP limiter, `/api/health` + `/openapi.json`/docs, audit old/new plumbing. This session only verified its state (committed, gate-green) — no changes needed.
