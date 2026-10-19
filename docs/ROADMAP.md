@@ -72,7 +72,7 @@ graph LR
 
 **Goal:** full user/team/membership lifecycle with effective-dated memberships.
 
-- [ ] TEST: service units — membership range math (join mid-week, end membership, transfer closes+opens in one tx) (FR-ADM-03/04/05)
+- [x] TEST: service units — membership range math (join mid-week, end membership, transfer closes+opens in one tx) (FR-ADM-03/04/05)
 - [x] IMPL: users/teams/memberships services + team-scoped repositories green
 - [ ] TEST: integration — create user duplicate rejection (EC-23), reset revokes sessions (FR-AUTH-05), deactivate blocks login + revokes + keeps history (FR-AUTH-06, EC-12/25/58), supervisor replacement drops team access (FR-ADM-02, EC-09), overlap transfer → 409 (EC-08/11)
 - [ ] IMPL: users/teams/memberships plugins green (SPEC §10.6 rows)
