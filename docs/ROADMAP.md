@@ -61,7 +61,7 @@ graph LR
 - [x] TEST: contract tests for the 4 auth routes incl. error envelope codes (SPEC §10.4/10.6)
 - [x] TEST: role-matrix table-driven test harness wired (mirrors SPEC §3) — starts failing for missing routes
 - [ ] IMPL: error envelope + Arabic error map wiring + audit helper green (SPEC §10.4, §15)
-- [ ] E2E: F-01 admin login happy path + wrong-credentials Arabic message (TESTING §9)
+- [x] E2E: F-01 admin login happy path + wrong-credentials Arabic message (TESTING §9)
 
 **Dependencies:** Phase 0. **Deliverables:** migrations, seed, auth module, guards, error system, role-matrix harness.
 **DoD:** auth E2E green; role-matrix harness green for auth routes; api services coverage ≥ 85%; all Phase-1 EC ids traceable.
