@@ -14,4 +14,10 @@ export default [
     ],
   },
   ...base,
+  // SPEC §9.1/§9.6: feature api.ts files are the ONE sanctioned web fetch
+  // context — everything else keeps the ban.
+  {
+    files: ["app/features/**/api.ts"],
+    rules: { "no-restricted-globals": "off" },
+  },
 ];

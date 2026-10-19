@@ -49,19 +49,19 @@ graph LR
 
 **Goal:** schema with all history-safety constraints + working sessions + the layered module pattern proven.
 
-- [ ] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
-- [ ] IMPL: `@sharq/schemas` settings registry green
-- [ ] TEST: migration tests — exclusion constraints reject overlapping memberships & rates; uniq(user, date) enforced (EC-11, EC-17, EC-40)
-- [ ] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants) + root `db:generate/migrate/studio` scripts
-- [ ] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
-- [ ] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
-- [ ] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
-- [ ] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)
-- [ ] IMPL: auth plugin (`login/logout/me/password`) + guard macros (`auth`/`role`/`teamScope`) green (SPEC §10.2)
-- [ ] TEST: contract tests for the 4 auth routes incl. error envelope codes (SPEC §10.4/10.6)
-- [ ] TEST: role-matrix table-driven test harness wired (mirrors SPEC §3) — starts failing for missing routes
-- [ ] IMPL: error envelope + Arabic error map wiring + audit helper green (SPEC §10.4, §15)
-- [ ] E2E: F-01 admin login happy path + wrong-credentials Arabic message (TESTING §9)
+- [x] TEST: registry unit tests — every SPEC §5.2 key has schema + seeded default + cross-field validator (FR-SET-01/08; TESTING §6.2)
+- [x] IMPL: `@sharq/schemas` settings registry green
+- [x] TEST: migration tests — exclusion constraints reject overlapping memberships & rates; uniq(user, date) enforced (EC-11, EC-17, EC-40)
+- [x] IMPL: Drizzle schema + migrations for all SPEC §7 tables (incl. `version`, soft deletes, audit append-only role grants) + root `db:generate/migrate/studio` scripts
+- [x] IMPL: seed module v1 (TESTING §15 personas subset: admin + supervisor + 5 employees + company rate) + root `seed` script
+- [x] TEST: auth service units — password hashing/verify, lockout counter, session idle expiry math (FR-AUTH-01/03; EC-25)
+- [x] IMPL: sessions table + cookie issue/revoke + idle timeout + lockout green
+- [x] TEST: integration — login (username **and** phone), wrong password generic message, deactivated account, duplicate username/phone (FR-AUTH-01/04/08; EC-23/25)
+- [x] IMPL: auth plugin (`login/logout/me/password`) + guard macros (`auth`/`role`/`teamScope`) green (SPEC §10.2)
+- [x] TEST: contract tests for the 4 auth routes incl. error envelope codes (SPEC §10.4/10.6)
+- [x] TEST: role-matrix table-driven test harness wired (mirrors SPEC §3) — starts failing for missing routes
+- [x] IMPL: error envelope + Arabic error map wiring + audit helper green (SPEC §10.4, §15)
+- [x] E2E: F-01 admin login happy path + wrong-credentials Arabic message (TESTING §9)
 
 **Dependencies:** Phase 0. **Deliverables:** migrations, seed, auth module, guards, error system, role-matrix harness.
 **DoD:** auth E2E green; role-matrix harness green for auth routes; api services coverage ≥ 85%; all Phase-1 EC ids traceable.

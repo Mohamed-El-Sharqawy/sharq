@@ -21,6 +21,7 @@
         "vite.config.ts",
         "vitest.config.ts",
         "playwright.config.ts",
+        "drizzle.config.ts",
         "../../packages/eslint-config/index.js",
         "../../packages/eslint-config/package.json"
       ]
@@ -37,10 +38,14 @@
         "vite.config.ts",
         "vitest.config.ts",
         "playwright.config.ts",
+        "drizzle.config.ts",
         "../../packages/tsconfig/*.json"
       ]
     },
     "test": {},
+    "test:integration": {
+      "inputs": ["tests/integration/**", "drizzle/**", "src/db/**"]
+    },
     "line-count": {
       "inputs": [
         "**/*.ts",
@@ -51,7 +56,8 @@
     },
     "e2e": {
       "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "env": ["DATABASE_URL", "CI"]
     }
   }
 }

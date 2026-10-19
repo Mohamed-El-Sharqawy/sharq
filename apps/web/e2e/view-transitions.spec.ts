@@ -110,6 +110,15 @@ test.describe("SPEC §14.3 · view transitions · page root & travel direction",
         page.evaluate(() => (window as { __vtCalls?: number }).__vtCalls ?? 0),
       )
       .toBeGreaterThan(0);
+    // Issue #4 root cause: startViewTransition fires at navigation START,
+    // before React commits the /demo location. A goBack() landing inside
+    // that window makes RR skip the pending transition entirely; the one
+    // committed effect then compares idx 0 >= lastIdx 0 and reads
+    // "forward". Waiting for /demo-only content proves the commit happened
+    // (and lastIdx advanced to 1) before we travel back.
+    await expect(
+      page.getByRole("heading", { name: "صفحة المعاينة" }),
+    ).toBeVisible();
     await page.goBack();
     await expect(page.locator("html")).toHaveAttribute("data-vt-dir", "back", {
       timeout: 10_000,

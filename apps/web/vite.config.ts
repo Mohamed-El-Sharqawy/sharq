@@ -6,4 +6,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter()],
+  // Dev + full-stack e2e: /api hits the Elysia service on :3000 — mirrors
+  // prod Traefik /api routing on one domain (SPEC §8.4).
+  server: {
+    proxy: { "/api": "http://localhost:3000" },
+  },
 });

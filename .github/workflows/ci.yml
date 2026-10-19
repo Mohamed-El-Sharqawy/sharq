@@ -1,6 +1,7 @@
-# CI pipeline — TESTING §12 stages 1–5, 7, 8 (stage 6 integration lands with
-# Phase 1 Testcontainers suites; stage 9 gates with the phases that own them).
-# Windows dev host / Linux CI: POSIX paths only.
+# CI pipeline — TESTING §12 stages 1-8 (stage 9 gates with the phases that
+# own them). Stage 6 integration runs the apps/api Testcontainers suites in
+# their own step inside the quality job (Docker is preinstalled on hosted
+# runners). Windows dev host / Linux CI: POSIX paths only.
 name: CI
 
 on:
@@ -19,7 +20,7 @@ permissions:
 
 jobs:
   quality:
-    name: "install -> lint -> line-count -> typecheck -> unit -> build"
+    name: "install -> lint -> line-count -> typecheck -> unit -> integration -> build"
     # Pinned, not ubuntu-latest: the label flips OS versions silently
     # (Ubuntu 26 migration 2026-10-19); upgrade deliberately instead.
     runs-on: ubuntu-24.04
@@ -37,9 +38,11 @@ jobs:
 
       # bun:test runs the unit specs of packages/* + apps/api (TESTING §2.1);
       # pinned to the host dev version to keep runtimes identical.
+      # 1.4.3 (2026-10-18): Testcontainers on Windows dev hosts needs named-pipe
+      # http + dockerode streaming, both broken in 1.2.21.
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.21
+          bun-version: 1.4.3
 
       # Turbo local cache (hit-once per commit, prefix-restored across PRs).
       - name: Turbo cache
@@ -62,9 +65,15 @@ jobs:
       - name: typecheck
         run: pnpm turbo run typecheck
 
-      # Stage 5 — unit: bun:test (packages + api) and Vitest (web) in parallel.
+      # Stage 5 — unit: bun:test (packages + api services, Docker-free) and
+      # Vitest (web) in parallel.
       - name: unit tests
         run: pnpm turbo run test
+
+      # Stage 6 — integration: apps/api Testcontainers Postgres suites
+      # (one container per suite file; see TESTING §7).
+      - name: integration tests
+        run: pnpm turbo run test:integration
 
       # Stage 7 — build: web (RRv7 SPA via vite) + api (bun build).
       - name: build
@@ -85,6 +94,13 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # Row 13: F-01 runs the FULL stack — the api webServer boots with bun
+      # (pinned to the host/quality-job version), and global-setup starts the
+      # ephemeral e2e Postgres via docker (preinstalled on hosted runners).
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
       # Browser binaries keyed on the lockfile (it pins @playwright/test).
       - name: Playwright browser cache
         uses: actions/cache@v6
@@ -98,9 +114,14 @@ jobs:
       - name: Install chromium + system deps
         run: pnpm --filter @sharq/web exec playwright install --with-deps chromium
 
-      # Stage 8 (skeleton scope): hello spec only until the Vite webServer lands.
+      # Stage 8 (TESTING §9): F-01 full-stack — Playwright boots the api
+      # (bun) + web dev server against the shared Neon Postgres
+      # (NEON_DATABASE_URL secret; global-setup migrates + seeds). Includes
+      # axe + visual baselines.
       - name: Run E2E
         run: pnpm e2e
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
 
       # TESTING §9: snapshot goldens are COMMITTED, never generated on the
       # fly. A missing baseline makes Playwright write it in-run (attempt 1
