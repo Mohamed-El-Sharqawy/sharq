@@ -5,14 +5,17 @@ Single source of truth for "where are we". Updated only via the AGENTS.md closin
 ## Current position
 
 - **Phase:** 2 — Admin: users & teams (goal: full user/team/membership lifecycle with effective-dated memberships)
-- **Status:** **Phase 1 complete (2026-10-19)** — PR #3 merged (`76b8e69`), tagged `phase-1`, release published. Protocol change recorded (implement-first, PR #5 draft, awaiting client merge). **Next session starts Phase 2** after merging PR #5.
+- **Status:** Phase 1 complete (merged `76b8e69`, tagged `phase-1`, released). Protocol: **implement first, test after** (2026-10-19, recorded everywhere). `phase/2-users-teams` cut from main `15caac7`, draft PR open, 0/8 rows.
 
 ## Next task
 
-1. Merge PR #5 (docs: implement-first protocol) — then `git fetch; git switch main; git pull` and cut `phase/2-users-teams` + draft PR with the Phase 2 checklist.
-2. First Phase 2 work (implement-first per the new protocol — no red-first tests): the membership-range-math scope of rows 1–2 (FR-ADM-03/04/05) — service units land AFTER implementation as the phase's test pass.
+- IMPL: users/teams/memberships services + team-scoped repositories green (ROADMAP row 2; implement-first — read SPEC FR-ADM-01..05 + §10.6 users/teams/memberships rows + §7 schema BEFORE coding; the row-1 membership-range-math units (FR-ADM-03/04/05: join mid-week, end membership, transfer closes+opens in one tx) are written AFTER implementation as the phase's test pass, per TESTING §4)
+  - Boot facts: auth guards/macros live (`auth`/`role`/`teamScope` — declare `auth` first); drizzle schema + seed ready (Neon dev DB in `apps/api/.env`; integration suites still Testcontainers/Docker); request URLs in tests use `localhost`; eslint-plugin-import crashes on out-of-order imports (external → parent → sibling); no file >150 non-blank/non-comment lines, functions ≤60, params ≤4; web screens = view.tsx + logic.ts, Arabic only in `@sharq/locales`; role-matrix rows flip `live:true` when routes land (destructive logout probes LAST); stay lean — no exploratory loops.
 
 ## Session log (newest first)
+
+### 2026-10-19 — PR #5 merged; Phase 2 branch cut; setup done
+- Client merged the protocol docs (implement-first, test-after from Phase 2 — recorded in AGENTS/SPEC §20.1/TESTING §4/ROADMAP). main fast-forwarded to `15caac7`; `phase/2-users-teams` cut + pushed; draft PR with the 8-row Phase 2 checklist opened early (every push runs CI). Phase 1 bookkeeping closed earlier this session: PR #3 merged → `phase-1` tag + release published. A fresh session can start Phase 2 implementation directly from the ledger.
 
 ### 2026-10-19 — client decision recorded: no TDD from Phase 2; implement first, test after
 - **Client instruction (quota-driven):** test-first/TDD loops burn too much of the z.ai weekly token quota — from Phase 2 onward the agent implements directly and writes each phase's tests after its implementation is complete. Recorded durably in AGENTS.md (working rules — the line every session reads), SPEC §20.1 (decisions table, superseding the TDD-first part of the quality-model row), TESTING §4 (order inverted; §4.2 inventory remains the binding have-tests-by-phase-end scope) and ROADMAP (header + working agreement #1). **Unchanged:** tests still exist for everything §4.2 lists, still named after FR-*/EC-* ids, still green with phase DoD/coverage gates before any PR; no red/skipped tests at merge; Phase 0–1 suites keep running (cumulative). **New duty in TDD's place:** conscious implementation — SPEC rows read before coding, edge cases handled deliberately, lint/typecheck/line-count green throughout. Sessions should also stay lean generally (fewer exploratory loops) per the same budget concern.
