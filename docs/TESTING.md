@@ -63,7 +63,7 @@ API and packages run natively on Bun (the same runtime as production), so bun:te
 
 ## 4. Test workflow
 
-> **Client decision 2026-10-19 (SPEC §20.1), effective Phase 2 onward: implement first, test after.** The red-first loop below is no longer required. §4.2's inventory remains the binding scope of what must HAVE tests by each phase's end — the tests are written once the phase's implementation is complete, then made green together with the phase's DoD gates. No PR merges with red/skipped tests (unchanged). Quality duty shifts forward: with no failing test to catch drift early, implementation sessions must read the SPEC rows they code against and cover the edge cases the tests would have pinned.
+> **Client decision 2026-10-22 (SPEC §20.1), supersedes 2026-10-19: implementation only — all tests deferred to project end.** No new tests are written during any remaining phase task. Every `TEST`/`E2E` roadmap row and the §4.2 inventory below are collected into the roadmap's end-of-project «Testing — deferred to end of project» phase, which the client drives once the implementation phases are complete; the per-phase DoD items that demand tests/E2E are satisfied there. Still binding: §4.2 stays the binding scope checklist for that effort; the EXISTING suites keep running on every PR and must stay green (skipped = red; never delete or weaken a test); the static gates (lint, typecheck, line-count, build) stay in every phase; and with no new tests catching drift, implementation sessions must read the SPEC rows they code against and cover their edge cases deliberately.
 
 ### 4.1 The loop (Phase 0–1 history; retained for reference)
 
@@ -71,7 +71,7 @@ API and packages run natively on Bun (the same runtime as production), so bun:te
 2. **Green** — write the minimum implementation that passes.
 3. **Refactor** — clean up while staying green (this is where SPEC §9 principles get applied).
 
-### 4.2 What must have tests (scope inventory; order per §4 — Phase 2+: written after implementation)
+### 4.2 What must have tests (scope inventory — the end-of-project Testing phase's checklist per the 2026-10-22 decision; every item here is written once, after the implementation phases complete)
 
 - All `@sharq/payroll` functions (math, resolution, periods, holidays).
 - All `@sharq/schemas` registry defaults, cross-field validators, amount normalizer, error-map entries.
@@ -218,6 +218,8 @@ Plus, every run: axe scan per route (zero critical), visual baselines per key sc
 | Static | 0 lint errors, 0 line-count violations | ESLint + check-line-count |
 
 Gates fail the build; coverage numbers are posted on every PR.
+
+> **2026-10-22 decision (SPEC §20.1):** the coverage, views, contract, traceability (and §12 e2e) gates in this table and pipeline are satisfied by the end-of-project «Testing — deferred to end of project» roadmap phase, not per-phase. The Static row (0 lint errors, 0 line-count violations) plus typecheck, build, and the green state of every EXISTING suite remain per-PR gates throughout.
 
 ---
 

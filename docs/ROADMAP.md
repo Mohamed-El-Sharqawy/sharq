@@ -1,8 +1,8 @@
 # Roadmap — شرق (Sharq)
 
-Phased plan optimized for finishing fast, with **test coverage baked in**: tasks are tagged — `TEST` (tests for the named scope), `IMPL` (implementation), `E2E` (end-to-end flow), `CHORE` (tooling/infra). **Order changed 2026-10-19 (client decision, SPEC §20.1): from Phase 2 onward, implement first — each phase's `TEST` rows are written after its `IMPL` rows complete, then green together before the PR.** Every task references SPEC FR/EC ids and is sized for **one working session** (~half a day). Companion docs: [SPEC.md](SPEC.md) · [TESTING.md](TESTING.md).
+Phased plan optimized for finishing fast, with **test coverage baked in**: tasks are tagged — `TEST` (tests for the named scope), `IMPL` (implementation), `E2E` (end-to-end flow), `CHORE` (tooling/infra). **Order changed 2026-10-22 (client decision, SPEC §20.1 — supersedes the 2026-10-19 implement-first-per-phase rule): from now on the remaining phases deliver IMPLEMENTATION ONLY — every `TEST`/`E2E` row in every phase is deferred to the end-of-project «Testing — deferred to end of project» phase and is worked there, after the implementation phases complete.** Sessions skip TEST/E2E rows and tick IMPL/CHORE rows; a phase is implementation-complete when those are done and the gates pass. Every task references SPEC FR/EC ids and is sized for **one working session** (~half a day). Companion docs: [SPEC.md](SPEC.md) · [TESTING.md](TESTING.md).
 
-**Global Definition of Done (applies to every phase):** all stage gates green (TESTING.md §12) · coverage gates met (§11) · traceability script passes (FR/EC ids covered) · no lint/line-count violations · phase flows pass in CI · **phase branch pushed, PR opened, merged by the client** (AGENTS.md Branch & PR workflow).
+**Global Definition of Done (applies to every phase):** static gates green (lint, typecheck, line-count, build — TESTING.md §12) · every EXISTING suite stays green (no skips, no deletions) · **phase branch pushed, PR opened, merged by the client** (AGENTS.md Branch & PR workflow). *Test-dependent DoD items (coverage §11, traceability, contract parity, e2e flows) are satisfied by the deferred Testing phase, not at phase end.*
 
 ```mermaid
 graph LR
@@ -17,6 +17,8 @@ graph LR
     P4 --> P8[Phase 8 · Audit, PWA, polish]
     P8 --> P9[Phase 9 · Hardening & deploy]
     P7 --> P9
+    P9 --> T[Testing · deferred to end of project]
+    T --> V[v1.0.0 release]
 ```
 
 ---
@@ -224,6 +226,23 @@ graph LR
 
 ---
 
+## Testing — deferred to end of project (2026-10-22 client decision, SPEC §20.1)
+
+**Goal:** the entire deferred test suite written and green in one dedicated pass, once every implementation phase is done. **Nothing in this phase starts before the implementation phases complete** — the client decides when.
+
+- [ ] Contract tests — every §10.6 row: §10.4 pair table + envelope + published-schema validation; role-matrix live rows' contract depth; PARSE probes (TESTING §8; Phase 2 rows 5 + the settings/attendance/payroll/export/audit rows from Phases 3–8)
+- [ ] Integration suites still missing — every §10.6 endpoint over real Postgres: guards, windows, period states, idempotency, concurrency, DB constraints, audit, isolation (TESTING §7)
+- [ ] Unit suites still missing — `@sharq/payroll` (resolver cascade, periods, holidays, totals, normalizer), `@sharq/schemas` (registry completeness, cross-field, error map), reducers' action matrices, `logic.ts`/mutation hooks (TESTING §4.2/§6)
+- [ ] View render tests — every screen: Arabic strings, empty/loading/error variants (SPEC §11, TESTING §4.3)
+- [ ] E2E flows — F-02..F-12 (TESTING §9; F-01 landed in Phase 1), incl. F-02 admin team/membership lifecycle, offline sync F-07, payroll parity F-09/F-10; axe + visual baselines per route; one keyboard-only grid pass (§14.4)
+- [ ] Excel snapshot tests (TESTING §10) + the two Phase 9 operational drills deferred with the blanket TEST-row rule: staging restore drill + deploy smoke (human confirms the report)
+- [ ] Coverage + traceability gates live — §11 thresholds, 100% FR/EC id coverage in test titles (§16 script), 100% §10.6 contract parity (§8.3)
+
+**Dependencies:** all implementation phases (0–9) merged. **Deliverables:** the full TESTING.md suite.
+**DoD:** every §11/§12 gate green including coverage, traceability and contract parity; no red/skipped tests; then tag `v1.0.0`.
+
+---
+
 ## v1.1 backlog (explicitly out of v1 — pull nothing earlier without updating SPEC §19)
 
 - [ ] Custom attendance statuses UI beyond seeds (FR-SET-05 extras)
@@ -238,9 +257,9 @@ graph LR
 
 ## Working agreements
 
-1. **Test order (2026-10-19, client decision): from Phase 2, implementation comes first and each phase's tests are written after its implementation is complete.** The tests still cover everything TESTING §4.2 lists; **no PR merges with red/skipped tests** (unchanged).
-2. Every PR lists the FR/EC ids it covers; the traceability gate backs this mechanically.
-3. Bugs get a failing test first, referencing the EC id (or adding a new EC row to SPEC §16 in the same PR).
-4. Phase DoDs are cumulative: earlier phases' gates keep running on every later PR.
+1. **Test order (2026-10-22, client decision — supersedes the 2026-10-19 rule): implementation ONLY.** Every `TEST`/`E2E` row in every phase is deferred to the end-of-project «Testing — deferred to end of project» phase and is worked there, after the implementation phases complete. Sessions skip TEST/E2E rows and tick IMPL/CHORE rows; a phase is implementation-complete when those are done and the gates pass (static gates + every EXISTING suite green — never skip, delete, or weaken a test; skipped = red).
+2. Every PR lists the FR/EC ids it covers; the deferred Testing phase turns them into the named tests (traceability gate §16 goes live there).
+3. Bugs found during implementation are fixed with conscious implementation and logged (PROGRESS + the EC id); their failing tests are written in the deferred Testing phase against the recorded EC id (or a new EC row added to SPEC §16 in the same PR).
+4. Phase DoDs are cumulative: earlier phases' gates keep running on every later PR (static gates + existing suites; test-dependent DoD items defer to the Testing phase).
 5. Scope changes update SPEC.md first (single source of truth), then tests, then code.
 6. Each phase ships on a `phase/<n>-<slug>` branch as one PR; the client reviews and merges — protocol in AGENTS.md (Branch & PR workflow).
