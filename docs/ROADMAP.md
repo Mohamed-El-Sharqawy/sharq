@@ -93,7 +93,7 @@ graph LR
 **Goal:** the entire §5 machinery — registry, resolver, rates, catalogs, impact preview, audit — fully unit-proven before any UI depends on it.
 
 - [ ] TEST: resolver unit tests FIRST — the §5.3 cascade table + §5.4 examples 1–4 + boundary dates + membership-dated team default + seeded-default fallback (FR-SET-03; EC-40/41/43/55; TESTING §6.1)
-- [ ] IMPL: `resolveRate` / `resolveSetting` in `@sharq/payroll` green
+- [x] IMPL: `resolveRate` / `resolveSetting` in `@sharq/payroll` green
 - [ ] TEST: period math units — generation, idempotency, transition rule (no gaps/overlaps), payday resolution + holiday shift (FR-PAY-01/08/09; EC-21/22, A10)
 - [ ] IMPL: period generation functions green
 - [ ] TEST: amount normalizer units — Arabic-Indic digits, `٫`, >2 decimals, zero, huge (EC-31..34)
