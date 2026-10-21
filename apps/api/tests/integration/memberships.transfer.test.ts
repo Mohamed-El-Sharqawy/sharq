@@ -67,8 +67,8 @@ beforeAll(async () => {
     validFrom: "2026-10-11",
     validTo: null,
   });
-});
-afterAll(() => db.stop());
+}, 60_000);
+afterAll(() => db.stop(), 30_000);
 
 describe("FR-ADM-05 · transfer closes A and opens B over real Postgres", () => {
   it("given an employee open in A, when added to B from mid-week D, then A stores D−1 and B opens at D — two real rows from one bundle", async () => {

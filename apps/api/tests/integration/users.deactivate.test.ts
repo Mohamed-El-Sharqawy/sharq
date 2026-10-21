@@ -73,8 +73,8 @@ beforeAll(async () => {
     NOW,
   );
   if (!off.ok) throw new Error("fixture deactivate failed");
-});
-afterAll(() => db.stop());
+}, 60_000);
+afterAll(() => db.stop(), 30_000);
 
 describe("FR-AUTH-06 · deactivate blocks login and revokes sessions (EC-25)", () => {
   it("given a deactivated user, when the CORRECT password arrives, then the generic failure returns with one login_denied audit and no live session", async () => {

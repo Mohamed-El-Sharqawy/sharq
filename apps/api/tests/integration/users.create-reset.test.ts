@@ -20,8 +20,8 @@ let ADMIN: string; // a real user row — audit_log.actor_id has an FK to users
 beforeAll(async () => {
   db = await startTestDb();
   ADMIN = await insertUser(db.db, "admin");
-});
-afterAll(() => db.stop());
+}, 60_000);
+afterAll(() => db.stop(), 30_000);
 
 function userDeps() {
   return {
@@ -110,7 +110,7 @@ describe("FR-AUTH-05 · admin reset revokes sessions and swaps the hash", () => 
     );
     if (!reset.ok) throw new Error("fixture reset failed");
     temp2 = reset.tempPassword;
-  });
+  }, 60_000);
 
   it("given a logged-in user, when the password is reset, then the live session is revoked and must_change_password is set", async () => {
     const sessions = await db.query`

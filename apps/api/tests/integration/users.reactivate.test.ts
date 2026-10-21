@@ -38,8 +38,8 @@ beforeAll(async () => {
     NOW,
   );
   if (!off.ok) throw new Error("fixture deactivate failed");
-});
-afterAll(() => db.stop());
+}, 60_000);
+afterAll(() => db.stop(), 30_000);
 
 describe("FR-AUTH-06 · reactivate restores access; no-op flips are silent", () => {
   it("given the deactivated fixture user, when deactivated again, then the current row returns with no version bump and no second audit", async () => {

@@ -49,8 +49,8 @@ beforeAll(async () => {
   });
   if (!team.ok) throw new Error("fixture team create failed");
   teamId = team.team.id;
-});
-afterAll(() => db.stop());
+}, 60_000);
+afterAll(() => db.stop(), 30_000);
 
 describe("FR-ADM-02 · supervisor replacement drops team access (EC-09)", () => {
   it("given a team supervised by A, when replaced with B, then the row flips and the guard input (isTeamSupervisor) flips with it", async () => {
