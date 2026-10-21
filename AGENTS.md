@@ -23,14 +23,14 @@ You are building the app described in `docs/SPEC.md` on the plan in `docs/ROADMA
 
 ## Working rules (pointers, not summaries — the docs carry the detail)
 
-- **Test order (client decision 2026-10-19, Phase 2 onward): implement first, test after — no TDD red-first loop.** Build the phase's implementation directly, then write its tests (scope = TESTING §4.2 inventory; names = FR-*/EC-* ids) and get them green with the phase gates before the PR. Conscious implementation is mandatory in TDD's place: read the SPEC rows before coding, cover their edge cases deliberately, keep lint/typecheck/line-count green throughout.
+- **Test order (client decision 2026-10-22, supersedes the 2026-10-19 rule): implementation ONLY — no new tests are written during any remaining phase task.** Every `TEST`/`E2E` roadmap row and the whole TESTING §4.2 inventory are deferred to a single end-of-project testing effort the client drives once the implementation phases are done (ROADMAP «Testing — deferred to end of project»). When working a phase, skip its TEST/E2E rows; tick only IMPL/CHORE rows; a phase is **implementation-complete** when those are done and the gates pass (its PR can then leave draft). Still binding: conscious implementation in tests' place — read the SPEC rows before coding, cover their edge cases deliberately, keep lint/typecheck/line-count/build green throughout; the EXISTING cumulative suites keep running on every PR and must stay green — never skip, delete, or weaken a test, and a red old suite unrelated to the task is a blocker to log, not a silent fix.
 - No source file over 150 non-blank, non-comment lines (SPEC §9.2).
 - No hard-coded business value: every number/list/enum is a SPEC §5 settings row or marked "fixed in code" with a reason.
 - Money is integer minor units; Arabic strings live only in `@sharq/locales`; all other standards in SPEC §9.
 
 ## Closing ritual (never end a session without it)
 
-1. **Tick** every task finished this session in `docs/ROADMAP.md` (`[ ]` → `[x]`). A task counts as finished only when its tests are green and the phase gates (TESTING §11) pass. In doubt = unticked.
+1. **Tick** every task finished this session in `docs/ROADMAP.md` (`[ ]` → `[x]`). A task counts as finished only when its implementation is complete and the gates pass — lint, typecheck, line-count, build + the existing cumulative suites (TESTING §11's coverage/traceability/test gates are deferred to the end-of-project testing effort per the 2026-10-22 decision). In doubt = unticked.
 2. **Update the ledger** `docs/PROGRESS.md`:
    - *Current position*: phase + one status line; when a phase's DoD is met, record «Phase N complete (date)».
    - *Next task*: copy the exact next roadmap line, so a fresh session needs zero searching.
