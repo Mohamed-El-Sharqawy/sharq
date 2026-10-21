@@ -8,6 +8,9 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { createApp, type App } from "../../src/app";
 import { createDrizzleAudit } from "../../src/lib/audit";
 import { createDrizzleAuthRepo } from "../../src/modules/auth/repository";
+import { createDrizzleUsersRepo } from "../../src/modules/users/repository";
+import { createDrizzleTeamsRepo } from "../../src/modules/teams/repository";
+import { createDrizzleMembershipsRepo } from "../../src/modules/teams/membership-repository";
 import { insertAuthUser } from "./auth.helpers";
 import { apiCall, expectEnvelope } from "./contract.helpers";
 import { startTestDb, type TestDb } from "./helpers";
@@ -37,6 +40,9 @@ beforeAll(async () => {
   const repo = createDrizzleAuthRepo(t.db);
   app = createApp({
     repo,
+    usersRepo: createDrizzleUsersRepo(t.db),
+    teamsRepo: createDrizzleTeamsRepo(t.db),
+    membershipsRepo: createDrizzleMembershipsRepo(t.db),
     audit: createDrizzleAudit(t.db),
     isTeamSupervisor: repo.isTeamSupervisor,
     dbCheck: async () => true,

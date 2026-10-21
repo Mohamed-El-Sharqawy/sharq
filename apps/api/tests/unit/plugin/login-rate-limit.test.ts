@@ -8,10 +8,14 @@ import { describe, expect, it } from "bun:test";
 import { API_ERROR_MESSAGES } from "@sharq/locales";
 import { createApp } from "../../../src/app";
 import { makeAudit, makeRepo, makeUser } from "../auth/helpers";
+import { stubMembershipsRepo, stubTeamsRepo, stubUsersRepo } from "./helpers";
 
 const build = (authPerMinute: number) =>
   createApp({
     repo: makeRepo([makeUser()]).repo,
+    usersRepo: stubUsersRepo(),
+    teamsRepo: stubTeamsRepo(),
+    membershipsRepo: stubMembershipsRepo(),
     audit: makeAudit(),
     isTeamSupervisor: async () => false,
     dbCheck: async () => true,

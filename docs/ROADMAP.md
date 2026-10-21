@@ -74,13 +74,13 @@ graph LR
 
 **Goal:** full user/team/membership lifecycle with effective-dated memberships.
 
-- [ ] TEST: service units — membership range math (join mid-week, end membership, transfer closes+opens in one tx) (FR-ADM-03/04/05)
-- [ ] IMPL: users/teams/memberships services + team-scoped repositories green
-- [ ] TEST: integration — create user duplicate rejection (EC-23), reset revokes sessions (FR-AUTH-05), deactivate blocks login + revokes + keeps history (FR-AUTH-06, EC-12/25/58), supervisor replacement drops team access (FR-ADM-02, EC-09), overlap transfer → 409 (EC-08/11)
-- [ ] IMPL: users/teams/memberships plugins green (SPEC §10.6 rows)
+- [x] TEST: service units — membership range math (join mid-week, end membership, transfer closes+opens in one tx) (FR-ADM-03/04/05)
+- [x] IMPL: users/teams/memberships services + team-scoped repositories green
+- [x] TEST: integration — create user duplicate rejection (EC-23), reset revokes sessions (FR-AUTH-05), deactivate blocks login + revokes + keeps history (FR-AUTH-06, EC-12/25/58), supervisor replacement drops team access (FR-ADM-02, EC-09), overlap transfer → 409 (EC-08/11)
+- [x] IMPL: users/teams/memberships plugins green (SPEC §10.6 rows)
 - [ ] TEST: contract tests for the new routes + role-matrix rows
 - [ ] TEST: view render tests for users list/detail + teams list/detail (Arabic strings, empty/loading/error) (SPEC §11)
-- [ ] IMPL: `/users`, `/teams` screens with `logic.ts` hooks green
+- [x] IMPL: `/users`, `/teams` screens with `logic.ts` hooks green
 - [ ] E2E: F-02 admin creates team + supervisor + members incl. mid-week join → sheet membership visible (TESTING §9)
 
 **Dependencies:** Phase 1. **Deliverables:** admin screens + APIs.

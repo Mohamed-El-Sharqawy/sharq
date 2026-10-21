@@ -8,6 +8,8 @@
 // fails here, and so does a guard regression on a live row. `bodyFor` lets a
 // row supply actor credentials so allowed actors reach the handler (login
 // needs real credentials; /password needs the actor's current password).
+import { USERS_TEAMS_ROWS } from "./role-matrix.rows.users-teams";
+
 export type Actor =
   "anonymous" | "employee" | "supervisorOwn" | "supervisorOther" | "admin";
 
@@ -40,21 +42,26 @@ type RowOpts = Partial<
   Pick<MatrixRow, "fr" | "ok" | "live" | "body" | "bodyFor">
 >;
 
-const r = (
+/** Row builder — exported for the split-out row modules (§9.2 line budget)
+ * and a hoisted function: they share this file's module cycle (they import
+ * `r`) and need it callable during their evaluation. */
+export function r(
   method: MatrixRow["method"],
   path: string,
   access: Access,
   opts: RowOpts = {},
-): MatrixRow => ({
-  method,
-  path,
-  access,
-  fr: opts.fr,
-  ok: opts.ok ?? 200,
-  live: opts.live ?? false,
-  body: opts.body,
-  bodyFor: opts.bodyFor,
-});
+): MatrixRow {
+  return {
+    method,
+    path,
+    access,
+    fr: opts.fr,
+    ok: opts.ok ?? 200,
+    live: opts.live ?? false,
+    body: opts.body,
+    bodyFor: opts.bodyFor,
+  };
+}
 
 /** §10.6 verbatim, decomposed to one probe per (method, path). */
 export const MATRIX: MatrixRow[] = [
@@ -64,6 +71,11 @@ export const MATRIX: MatrixRow[] = [
     bodyFor: (c) => ({ identifier: c.username, password: c.password }),
   }),
   r("GET", "/api/auth/me", "any", { fr: "AUTH-01", live: true }),
+  // The users/teams rows live in their own module (§9.2 line budget) —
+  // landed + flipped live with roadmap row 4. They probe BEFORE the
+  // password rotation and the destructive logout row (those kill the
+  // actors' credentials/sessions — logout probes last by design).
+  ...USERS_TEAMS_ROWS,
   r("POST", "/api/auth/password", "any", {
     fr: "AUTH-07",
     ok: 204,
@@ -73,17 +85,6 @@ export const MATRIX: MatrixRow[] = [
   // Logout is destructive (revokes the actor sessions) — it probes LAST so
   // the rows above still have live sessions.
   r("POST", "/api/auth/logout", "any", { fr: "AUTH-02", ok: 204, live: true }),
-  r("GET", "/api/users", "admin", { fr: "ADM-06" }),
-  r("POST", "/api/users", "admin", { fr: "AUTH-04" }),
-  r("PATCH", "/api/users/:id", "admin", { fr: "AUTH-06/07" }),
-  r("POST", "/api/users/:id/reset-password", "admin", { fr: "AUTH-05" }),
-  r("POST", "/api/users/:id/deactivate", "admin", { fr: "AUTH-06" }),
-  r("POST", "/api/users/:id/reactivate", "admin", { fr: "AUTH-06" }),
-  r("GET", "/api/teams", "admin", { fr: "ADM-01" }),
-  r("POST", "/api/teams", "admin", { fr: "ADM-01" }),
-  r("PATCH", "/api/teams/:id", "admin", { fr: "ADM-02" }),
-  r("POST", "/api/teams/:id/members", "admin", { fr: "ADM-03/05" }),
-  r("PATCH", "/api/teams/:id/members/:mid", "admin", { fr: "ADM-04/05" }),
   // §10.6: settings GET is "admin (edit) / all (read resolved)" — every
   // authenticated role may read the resolved map (employees the formatting
   // subset); only admins PATCH.

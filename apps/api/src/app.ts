@@ -7,14 +7,25 @@ import { openapi } from "@elysiajs/openapi";
 import pkg from "../package.json";
 import { createAuthRoutes } from "./plugins/auth.routes";
 import { createHealthRoutes } from "./plugins/health.routes";
+import { createTeamsRoutes } from "./plugins/teams.routes";
+import { createUsersRoutes } from "./plugins/users.routes";
 import { createAuthService } from "./modules/auth/service";
 import { createMemoryLockoutStore } from "./modules/auth/lockout";
+import { createTeamsService } from "./modules/teams/service";
+import { createUsersService } from "./modules/users/service";
 import { apiErrorStatus } from "./lib/errors";
 import { createObsRoutes, type RequestLogSink } from "./lib/obs";
 import type { AuditPort, AuthRepo } from "./modules/auth/types";
+import type { UsersRepo } from "./modules/users/service";
+import type { MembershipsRepo, TeamsRepo } from "./modules/teams/service";
 
 export type AppDeps = {
   repo: AuthRepo;
+  /** Admin user management (FR-AUTH-04..06, FR-ADM-06). */
+  usersRepo: UsersRepo;
+  /** Teams + effective-dated memberships (FR-ADM-01..05). */
+  teamsRepo: TeamsRepo;
+  membershipsRepo: MembershipsRepo;
   audit: AuditPort;
   isTeamSupervisor(userId: string, teamId: string): Promise<boolean>;
   /** §10.7 health probe: one DB round-trip. */
@@ -38,6 +49,21 @@ export function createApp(deps: AppDeps) {
     audit: deps.audit,
     idleMinutes: deps.idleMinutes,
   });
+  const usersService = createUsersService({
+    repo: deps.usersRepo,
+    audit: deps.audit,
+  });
+  const teamsService = createTeamsService({
+    teams: deps.teamsRepo,
+    memberships: deps.membershipsRepo,
+    users: deps.usersRepo,
+    audit: deps.audit,
+  });
+  /** Guard deps shared by every route plugin (§10.2). */
+  const guardDeps = {
+    resolveSession: service.resolveSession,
+    isTeamSupervisor: deps.isTeamSupervisor,
+  };
   return new Elysia({ name: "sharq-api" })
     .use(createObsRoutes({ logger: deps.logger }))
     .use(
@@ -71,6 +97,8 @@ export function createApp(deps: AppDeps) {
         authRateLimitMax: deps.rateLimit?.authPerMinute ?? 10,
       }),
     )
+    .use(createUsersRoutes({ service: usersService, ...guardDeps }))
+    .use(createTeamsRoutes({ service: teamsService, ...guardDeps }))
     .use(createHealthRoutes({ dbCheck: deps.dbCheck }));
 }
 

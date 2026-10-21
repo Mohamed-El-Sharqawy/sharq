@@ -3,6 +3,11 @@
 // state into each other. Mocked ports per TESTING §4.2 — no Docker here.
 import { createApp } from "../../../src/app";
 import { hashPassword } from "../../../src/modules/auth/password";
+import type { UsersRepo } from "../../../src/modules/users/service";
+import type {
+  MembershipsRepo,
+  TeamsRepo,
+} from "../../../src/modules/teams/service";
 import {
   makeAudit,
   makeRepo,
@@ -13,6 +18,23 @@ import {
 export const PASSWORD = "Pw#Route-2026";
 export const audit = makeAudit();
 export const isTeamSupervisor = async () => false;
+
+/** Route-plumbing stubs for suites that don't exercise the users/teams
+ * routes: any accidental call throws instead of silently "working". */
+const stubRepo = <T extends object>(name: string): T =>
+  new Proxy(
+    {},
+    {
+      get: (_target, prop) => () => {
+        throw new Error(`${name}.${String(prop)}: stubbed in this suite`);
+      },
+    },
+  ) as T;
+
+export const stubUsersRepo = () => stubRepo<UsersRepo>("UsersRepo");
+export const stubTeamsRepo = () => stubRepo<TeamsRepo>("TeamsRepo");
+export const stubMembershipsRepo = () =>
+  stubRepo<MembershipsRepo>("MembershipsRepo");
 
 export async function makeAdmin(): Promise<UserWithHash> {
   return makeUser({
@@ -26,6 +48,9 @@ export async function makeAdmin(): Promise<UserWithHash> {
 export function buildApp(admin: UserWithHash, secureCookies = false) {
   return createApp({
     repo: makeRepo([{ ...admin }]).repo,
+    usersRepo: stubUsersRepo(),
+    teamsRepo: stubTeamsRepo(),
+    membershipsRepo: stubMembershipsRepo(),
     audit,
     isTeamSupervisor,
     dbCheck: async () => true,
@@ -38,6 +63,9 @@ export function buildAppWithRepo(admin: UserWithHash) {
   const repo = makeRepo([{ ...admin }]);
   const app = createApp({
     repo: repo.repo,
+    usersRepo: stubUsersRepo(),
+    teamsRepo: stubTeamsRepo(),
+    membershipsRepo: stubMembershipsRepo(),
     audit,
     isTeamSupervisor,
     dbCheck: async () => true,
