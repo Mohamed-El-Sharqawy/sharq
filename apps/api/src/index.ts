@@ -8,6 +8,9 @@ import { createDrizzleAudit } from "./lib/audit";
 import { parseEnv } from "./lib/env";
 import { getAppDb } from "./db/client";
 import { createDrizzleAuthRepo } from "./modules/auth/repository";
+import { createDrizzleUsersRepo } from "./modules/users/repository";
+import { createDrizzleTeamsRepo } from "./modules/teams/repository";
+import { createDrizzleMembershipsRepo } from "./modules/teams/membership-repository";
 
 const env = parseEnv(process.env);
 const logger = pino({ level: env.LOG_LEVEL });
@@ -17,6 +20,9 @@ const repo = createDrizzleAuthRepo(db);
 
 const app = createApp({
   repo,
+  usersRepo: createDrizzleUsersRepo(db),
+  teamsRepo: createDrizzleTeamsRepo(db),
+  membershipsRepo: createDrizzleMembershipsRepo(db),
   audit: createDrizzleAudit(db),
   isTeamSupervisor: repo.isTeamSupervisor,
   dbCheck: async () => {

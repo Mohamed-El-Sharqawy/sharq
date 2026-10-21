@@ -7,11 +7,19 @@
 import { describe, expect, it } from "bun:test";
 import { createApp } from "../../src/app";
 import { makeAudit, makeRepo, makeUser } from "../unit/auth/helpers";
+import {
+  stubMembershipsRepo,
+  stubTeamsRepo,
+  stubUsersRepo,
+} from "../unit/plugin/helpers";
 import { apiCall } from "./contract.helpers";
 import { MATRIX } from "./role-matrix.data";
 
 const app = createApp({
   repo: makeRepo([makeUser()]).repo,
+  usersRepo: stubUsersRepo(),
+  teamsRepo: stubTeamsRepo(),
+  membershipsRepo: stubMembershipsRepo(),
   audit: makeAudit(),
   isTeamSupervisor: async () => false,
   dbCheck: async () => true,

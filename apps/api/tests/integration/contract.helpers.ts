@@ -11,6 +11,9 @@ import { type ApiErrorCode, ErrorEnvelope } from "@sharq/schemas";
 import { createApp, type App } from "../../src/app";
 import { createDrizzleAudit } from "../../src/lib/audit";
 import { createDrizzleAuthRepo } from "../../src/modules/auth/repository";
+import { createDrizzleUsersRepo } from "../../src/modules/users/repository";
+import { createDrizzleTeamsRepo } from "../../src/modules/teams/repository";
+import { createDrizzleMembershipsRepo } from "../../src/modules/teams/membership-repository";
 import type { TestDb } from "./helpers";
 
 // SPEC §10.4 verbatim — stable code → fixed HTTP status.
@@ -44,6 +47,9 @@ export function createIntegrationApp(
   const repo = createDrizzleAuthRepo(t.db);
   return createApp({
     repo,
+    usersRepo: createDrizzleUsersRepo(t.db),
+    teamsRepo: createDrizzleTeamsRepo(t.db),
+    membershipsRepo: createDrizzleMembershipsRepo(t.db),
     audit: createDrizzleAudit(t.db),
     isTeamSupervisor: repo.isTeamSupervisor,
     secureCookies: opts.secureCookies,

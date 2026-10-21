@@ -11,6 +11,7 @@ import {
   makeUser,
   type UserWithHash,
 } from "../auth/helpers";
+import { stubMembershipsRepo, stubTeamsRepo, stubUsersRepo } from "./helpers";
 
 type LogLine = Record<string, unknown> & { msg?: string };
 const PASSWORD = "Pw#Log-2026";
@@ -28,6 +29,9 @@ const build = async () => {
   });
   const app = createApp({
     repo: makeRepo([admin]).repo,
+    usersRepo: stubUsersRepo(),
+    teamsRepo: stubTeamsRepo(),
+    membershipsRepo: stubMembershipsRepo(),
     audit: makeAudit(),
     isTeamSupervisor: async () => false,
     dbCheck: async () => true,
