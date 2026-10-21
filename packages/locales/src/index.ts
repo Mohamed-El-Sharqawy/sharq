@@ -12,3 +12,7 @@ export * from "./errors";
 
 // /login screen strings (SPEC §11, roadmap row 13).
 export * from "./login";
+
+// /users + /teams admin screens (SPEC §11, Phase 2 row 7).
+export * from "./users";
+export * from "./teams";

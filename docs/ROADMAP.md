@@ -80,7 +80,7 @@ graph LR
 - [x] IMPL: users/teams/memberships plugins green (SPEC §10.6 rows)
 - [ ] TEST: contract tests for the new routes + role-matrix rows
 - [ ] TEST: view render tests for users list/detail + teams list/detail (Arabic strings, empty/loading/error) (SPEC §11)
-- [ ] IMPL: `/users`, `/teams` screens with `logic.ts` hooks green
+- [x] IMPL: `/users`, `/teams` screens with `logic.ts` hooks green
 - [ ] E2E: F-02 admin creates team + supervisor + members incl. mid-week join → sheet membership visible (TESTING §9)
 
 **Dependencies:** Phase 1. **Deliverables:** admin screens + APIs.
