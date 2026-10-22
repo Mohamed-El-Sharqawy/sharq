@@ -10,6 +10,7 @@ import {
   APP_NAME,
   DASHBOARD_TITLE,
   DEMO_LINK,
+  SETTINGS_TITLE,
   TEAMS_TITLE,
   USERS_TITLE,
 } from "@sharq/locales";
@@ -26,6 +27,11 @@ export default function Dashboard() {
         </Link>
         <Link to="/teams" viewTransition>
           {TEAMS_TITLE}
+        </Link>
+        {/* The settings section's entry point (Phase 3 row 12); the seven
+         * v1 screens cross-link through the section nav (SettingsNav). */}
+        <Link to="/settings/rates" viewTransition>
+          {SETTINGS_TITLE}
         </Link>
       </nav>
       {/* SPEC §14.3: in-app links navigate with view transitions. */}

@@ -15,6 +15,7 @@
   "dependencies": {
     "@react-router/node": "catalog:",
     "@sharq/locales": "workspace:*",
+    "@sharq/payroll": "workspace:*",
     "@sharq/schemas": "workspace:*",
     "@sharq/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",

@@ -201,6 +201,9 @@ importers:
       '@sharq/locales':
         specifier: workspace:*
         version: link:../../packages/locales
+      '@sharq/payroll':
+        specifier: workspace:*
+        version: link:../../packages/payroll
       '@sharq/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

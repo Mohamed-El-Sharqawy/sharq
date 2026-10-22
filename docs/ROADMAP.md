@@ -103,7 +103,7 @@ graph LR
 - [ ] TEST: settings query contract — `SETTINGS_CHANGED` 409 carries fresh settings payload (EC-48)
 - [ ] TEST: contract tests + role-matrix rows for all new routes
 - [ ] TEST: view render tests for settings screens + ImpactPreviewDialog (SPEC §11)
-- [ ] IMPL: `/settings/*` screens (rates timeline, entry, reasons, statuses, periods, policies, branding; calendar & security marked v1.1) green
+- [x] IMPL: `/settings/*` screens (rates timeline, entry, reasons, statuses, periods, policies, branding; calendar & security marked v1.1) green
 - [ ] E2E: F-03 rate change mid-week with preview → prefill changes; F-04 bounds/quick-picks/catalog edits (TESTING §9)
 
 **Dependencies:** Phase 1 (2 parallelizes). **Deliverables:** the whole dynamic-configuration system.

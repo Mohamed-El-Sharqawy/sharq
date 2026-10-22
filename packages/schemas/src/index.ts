@@ -4,6 +4,7 @@
 export * from "./settings/types";
 export * from "./settings/registry";
 export * from "./settings/cross-field";
+export * from "./settings/schema-check";
 export * from "./money";
 export * from "./auth";
 export * from "./errors";
