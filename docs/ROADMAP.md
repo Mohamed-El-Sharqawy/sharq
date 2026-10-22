@@ -97,7 +97,7 @@ graph LR
 - [ ] TEST: period math units — generation, idempotency, transition rule (no gaps/overlaps), payday resolution + holiday shift (FR-PAY-01/08/09; EC-21/22, A10)
 - [x] IMPL: period generation functions green
 - [ ] TEST: amount normalizer units — Arabic-Indic digits, `٫`, >2 decimals, zero, huge (EC-31..34)
-- [ ] IMPL: normalizer in `@sharq/schemas` green
+- [x] IMPL: normalizer in `@sharq/schemas` green
 - [ ] TEST: integration — settings PATCH cross-field validation + version conflicts (EC-53), effective-date guard vs locked/paid (FR-SET-09, EC-42), minorUnitScale immutability (EC-52), impact endpoint counts, rate overlap 409, company-rate-without-successor block (EC-56), catalog deactivate-never-delete (EC-46)
 - [ ] IMPL: settings/rates/reasons/statuses/holidays plugins + impact-preview service + settings audit green (SPEC §10.6)
 - [ ] TEST: settings query contract — `SETTINGS_CHANGED` 409 carries fresh settings payload (EC-48)
