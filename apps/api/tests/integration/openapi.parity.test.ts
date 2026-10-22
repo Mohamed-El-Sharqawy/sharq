@@ -8,6 +8,7 @@ import { describe, expect, it } from "bun:test";
 import { createApp } from "../../src/app";
 import { makeAudit, makeRepo, makeUser } from "../unit/auth/helpers";
 import {
+  stubConfigRepo,
   stubMembershipsRepo,
   stubTeamsRepo,
   stubUsersRepo,
@@ -20,6 +21,7 @@ const app = createApp({
   usersRepo: stubUsersRepo(),
   teamsRepo: stubTeamsRepo(),
   membershipsRepo: stubMembershipsRepo(),
+  configRepo: stubConfigRepo(),
   audit: makeAudit(),
   isTeamSupervisor: async () => false,
   dbCheck: async () => true,

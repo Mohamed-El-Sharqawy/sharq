@@ -99,7 +99,7 @@ graph LR
 - [ ] TEST: amount normalizer units — Arabic-Indic digits, `٫`, >2 decimals, zero, huge (EC-31..34)
 - [x] IMPL: normalizer in `@sharq/schemas` green
 - [ ] TEST: integration — settings PATCH cross-field validation + version conflicts (EC-53), effective-date guard vs locked/paid (FR-SET-09, EC-42), minorUnitScale immutability (EC-52), impact endpoint counts, rate overlap 409, company-rate-without-successor block (EC-56), catalog deactivate-never-delete (EC-46)
-- [ ] IMPL: settings/rates/reasons/statuses/holidays plugins + impact-preview service + settings audit green (SPEC §10.6)
+- [x] IMPL: settings/rates/reasons/statuses/holidays plugins + impact-preview service + settings audit green (SPEC §10.6)
 - [ ] TEST: settings query contract — `SETTINGS_CHANGED` 409 carries fresh settings payload (EC-48)
 - [ ] TEST: contract tests + role-matrix rows for all new routes
 - [ ] TEST: view render tests for settings screens + ImpactPreviewDialog (SPEC §11)

@@ -10,3 +10,6 @@ export * from "./errors";
 export * from "./pagination";
 export * from "./users";
 export * from "./teams";
+export * from "./config.settings";
+export * from "./config.rates";
+export * from "./config.catalogs";

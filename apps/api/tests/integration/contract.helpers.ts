@@ -11,6 +11,7 @@ import { type ApiErrorCode, ErrorEnvelope } from "@sharq/schemas";
 import { createApp, type App } from "../../src/app";
 import { createDrizzleAudit } from "../../src/lib/audit";
 import { createDrizzleAuthRepo } from "../../src/modules/auth/repository";
+import { createDrizzleConfigRepo } from "../../src/modules/config/repository";
 import { createDrizzleUsersRepo } from "../../src/modules/users/repository";
 import { createDrizzleTeamsRepo } from "../../src/modules/teams/repository";
 import { createDrizzleMembershipsRepo } from "../../src/modules/teams/membership-repository";
@@ -50,6 +51,7 @@ export function createIntegrationApp(
     usersRepo: createDrizzleUsersRepo(t.db),
     teamsRepo: createDrizzleTeamsRepo(t.db),
     membershipsRepo: createDrizzleMembershipsRepo(t.db),
+    configRepo: createDrizzleConfigRepo(t.db),
     audit: createDrizzleAudit(t.db),
     isTeamSupervisor: repo.isTeamSupervisor,
     secureCookies: opts.secureCookies,

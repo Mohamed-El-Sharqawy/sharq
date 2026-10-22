@@ -16,7 +16,10 @@ export type GuardDeps = {
     token: string,
     now: Date,
   ): Promise<{ user: AuthUser; session: AuthSession } | null>;
-  isTeamSupervisor(userId: string, teamId: string): Promise<boolean>;
+  /** Only the teamScope macro calls it — plugins without team-scoped
+   * routes (§10.6 config rows are admin/any) omit it and the macro fails
+   * CLOSED if ever invoked without it. */
+  isTeamSupervisor?(userId: string, teamId: string): Promise<boolean>;
 };
 
 type Jar = { [key: string]: { value?: unknown } | undefined };
@@ -76,7 +79,8 @@ export function createGuards(deps: GuardDeps) {
         if (!user) return apiErrorStatus("AUTH_REQUIRED");
         if (user.role === "admin") return;
         const teamId = pickTeamId(params, query, body, key);
-        if (!teamId || !(await deps.isTeamSupervisor(user.id, teamId))) {
+        const supervisor = deps.isTeamSupervisor;
+        if (!teamId || !supervisor || !(await supervisor(user.id, teamId))) {
           return apiErrorStatus("AUTH_FORBIDDEN");
         }
       },

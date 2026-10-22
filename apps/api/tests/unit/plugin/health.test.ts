@@ -3,7 +3,12 @@
 import { describe, expect, it } from "bun:test";
 import { createApp } from "../../../src/app";
 import { makeAudit, makeRepo, makeUser } from "../auth/helpers";
-import { stubMembershipsRepo, stubTeamsRepo, stubUsersRepo } from "./helpers";
+import {
+  stubConfigRepo,
+  stubMembershipsRepo,
+  stubTeamsRepo,
+  stubUsersRepo,
+} from "./helpers";
 
 const build = (dbUp: boolean) =>
   createApp({
@@ -11,6 +16,7 @@ const build = (dbUp: boolean) =>
     usersRepo: stubUsersRepo(),
     teamsRepo: stubTeamsRepo(),
     membershipsRepo: stubMembershipsRepo(),
+    configRepo: stubConfigRepo(),
     audit: makeAudit(),
     isTeamSupervisor: async () => false,
     dbCheck: async () => dbUp,
