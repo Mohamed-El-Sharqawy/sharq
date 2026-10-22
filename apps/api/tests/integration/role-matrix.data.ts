@@ -8,6 +8,7 @@
 // fails here, and so does a guard regression on a live row. `bodyFor` lets a
 // row supply actor credentials so allowed actors reach the handler (login
 // needs real credentials; /password needs the actor's current password).
+import { CONFIG_ROWS } from "./role-matrix.rows.config";
 import { USERS_TEAMS_ROWS } from "./role-matrix.rows.users-teams";
 
 export type Actor =
@@ -76,6 +77,11 @@ export const MATRIX: MatrixRow[] = [
   // password rotation and the destructive logout row (those kill the
   // actors' credentials/sessions — logout probes last by design).
   ...USERS_TEAMS_ROWS,
+  // The §5 config rows landed + flipped live with Phase 3 row 8. The
+  // settings-GET row probes every role (all read resolved, §3); the write
+  // rows are admin-only. They probe BEFORE the password rotation and the
+  // destructive logout row for the same session-liveness reason.
+  ...CONFIG_ROWS,
   r("POST", "/api/auth/password", "any", {
     fr: "AUTH-07",
     ok: 204,
@@ -85,24 +91,6 @@ export const MATRIX: MatrixRow[] = [
   // Logout is destructive (revokes the actor sessions) — it probes LAST so
   // the rows above still have live sessions.
   r("POST", "/api/auth/logout", "any", { fr: "AUTH-02", ok: 204, live: true }),
-  // §10.6: settings GET is "admin (edit) / all (read resolved)" — every
-  // authenticated role may read the resolved map (employees the formatting
-  // subset); only admins PATCH.
-  r("GET", "/api/settings", "any", { fr: "SET-01" }),
-  r("PATCH", "/api/settings/:key", "admin", { fr: "SET-02/11/12" }),
-  r("POST", "/api/settings/impact", "admin", { fr: "SET-02" }),
-  r("GET", "/api/rates", "admin", { fr: "SET-03" }),
-  r("POST", "/api/rates", "admin", { fr: "SET-03" }),
-  r("PATCH", "/api/rates/:id", "admin", { fr: "SET-03" }),
-  r("GET", "/api/reason-catalog", "admin", { fr: "SET-04" }),
-  r("POST", "/api/reason-catalog", "admin", { fr: "SET-04" }),
-  r("PATCH", "/api/reason-catalog/:id", "admin", { fr: "SET-04" }),
-  r("GET", "/api/attendance-statuses", "admin", { fr: "SET-05" }),
-  r("POST", "/api/attendance-statuses", "admin", { fr: "SET-05" }),
-  r("PATCH", "/api/attendance-statuses/:id", "admin", { fr: "SET-05" }),
-  r("GET", "/api/holidays", "admin", { fr: "SET-06" }),
-  r("POST", "/api/holidays", "admin", { fr: "SET-06" }),
-  r("DELETE", "/api/holidays/:id", "admin", { fr: "SET-06" }),
   r("GET", "/api/attendance", "teamScoped", { fr: "GRID-01" }),
   r("POST", "/api/attendance/bulk", "teamScoped", { fr: "ATT-08" }),
   r("PATCH", "/api/attendance/:id", "teamScoped", { fr: "ATT-04/06" }),

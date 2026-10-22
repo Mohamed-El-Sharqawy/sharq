@@ -93,17 +93,17 @@ graph LR
 **Goal:** the entire §5 machinery — registry, resolver, rates, catalogs, impact preview, audit — fully unit-proven before any UI depends on it.
 
 - [ ] TEST: resolver unit tests FIRST — the §5.3 cascade table + §5.4 examples 1–4 + boundary dates + membership-dated team default + seeded-default fallback (FR-SET-03; EC-40/41/43/55; TESTING §6.1)
-- [ ] IMPL: `resolveRate` / `resolveSetting` in `@sharq/payroll` green
+- [x] IMPL: `resolveRate` / `resolveSetting` in `@sharq/payroll` green
 - [ ] TEST: period math units — generation, idempotency, transition rule (no gaps/overlaps), payday resolution + holiday shift (FR-PAY-01/08/09; EC-21/22, A10)
-- [ ] IMPL: period generation functions green
+- [x] IMPL: period generation functions green
 - [ ] TEST: amount normalizer units — Arabic-Indic digits, `٫`, >2 decimals, zero, huge (EC-31..34)
-- [ ] IMPL: normalizer in `@sharq/schemas` green
+- [x] IMPL: normalizer in `@sharq/schemas` green
 - [ ] TEST: integration — settings PATCH cross-field validation + version conflicts (EC-53), effective-date guard vs locked/paid (FR-SET-09, EC-42), minorUnitScale immutability (EC-52), impact endpoint counts, rate overlap 409, company-rate-without-successor block (EC-56), catalog deactivate-never-delete (EC-46)
-- [ ] IMPL: settings/rates/reasons/statuses/holidays plugins + impact-preview service + settings audit green (SPEC §10.6)
+- [x] IMPL: settings/rates/reasons/statuses/holidays plugins + impact-preview service + settings audit green (SPEC §10.6)
 - [ ] TEST: settings query contract — `SETTINGS_CHANGED` 409 carries fresh settings payload (EC-48)
 - [ ] TEST: contract tests + role-matrix rows for all new routes
 - [ ] TEST: view render tests for settings screens + ImpactPreviewDialog (SPEC §11)
-- [ ] IMPL: `/settings/*` screens (rates timeline, entry, reasons, statuses, periods, policies, branding; calendar & security marked v1.1) green
+- [x] IMPL: `/settings/*` screens (rates timeline, entry, reasons, statuses, periods, policies, branding; calendar & security marked v1.1) green
 - [ ] E2E: F-03 rate change mid-week with preview → prefill changes; F-04 bounds/quick-picks/catalog edits (TESTING §9)
 
 **Dependencies:** Phase 1 (2 parallelizes). **Deliverables:** the whole dynamic-configuration system.

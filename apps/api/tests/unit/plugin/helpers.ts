@@ -3,6 +3,7 @@
 // state into each other. Mocked ports per TESTING §4.2 — no Docker here.
 import { createApp } from "../../../src/app";
 import { hashPassword } from "../../../src/modules/auth/password";
+import type { ConfigRepo } from "../../../src/modules/config/service";
 import type { UsersRepo } from "../../../src/modules/users/service";
 import type {
   MembershipsRepo,
@@ -35,6 +36,7 @@ export const stubUsersRepo = () => stubRepo<UsersRepo>("UsersRepo");
 export const stubTeamsRepo = () => stubRepo<TeamsRepo>("TeamsRepo");
 export const stubMembershipsRepo = () =>
   stubRepo<MembershipsRepo>("MembershipsRepo");
+export const stubConfigRepo = () => stubRepo<ConfigRepo>("ConfigRepo");
 
 export async function makeAdmin(): Promise<UserWithHash> {
   return makeUser({
@@ -51,6 +53,7 @@ export function buildApp(admin: UserWithHash, secureCookies = false) {
     usersRepo: stubUsersRepo(),
     teamsRepo: stubTeamsRepo(),
     membershipsRepo: stubMembershipsRepo(),
+    configRepo: stubConfigRepo(),
     audit,
     isTeamSupervisor,
     dbCheck: async () => true,
@@ -66,6 +69,7 @@ export function buildAppWithRepo(admin: UserWithHash) {
     usersRepo: stubUsersRepo(),
     teamsRepo: stubTeamsRepo(),
     membershipsRepo: stubMembershipsRepo(),
+    configRepo: stubConfigRepo(),
     audit,
     isTeamSupervisor,
     dbCheck: async () => true,

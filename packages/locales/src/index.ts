@@ -16,3 +16,7 @@ export * from "./login";
 // /users + /teams admin screens (SPEC §11, Phase 2 row 7).
 export * from "./users";
 export * from "./teams";
+
+// /settings/* screens (SPEC §11, Phase 3 row 12).
+export * from "./settings";
+export * from "./settings-screens";

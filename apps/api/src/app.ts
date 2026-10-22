@@ -9,13 +9,16 @@ import { createAuthRoutes } from "./plugins/auth.routes";
 import { createHealthRoutes } from "./plugins/health.routes";
 import { createTeamsRoutes } from "./plugins/teams.routes";
 import { createUsersRoutes } from "./plugins/users.routes";
+import { createConfigRoutes } from "./plugins/config.routes";
 import { createAuthService } from "./modules/auth/service";
 import { createMemoryLockoutStore } from "./modules/auth/lockout";
+import { createConfigService } from "./modules/config/service";
 import { createTeamsService } from "./modules/teams/service";
 import { createUsersService } from "./modules/users/service";
 import { apiErrorStatus } from "./lib/errors";
 import { createObsRoutes, type RequestLogSink } from "./lib/obs";
 import type { AuditPort, AuthRepo } from "./modules/auth/types";
+import type { ConfigRepo } from "./modules/config/service";
 import type { UsersRepo } from "./modules/users/service";
 import type { MembershipsRepo, TeamsRepo } from "./modules/teams/service";
 
@@ -26,6 +29,8 @@ export type AppDeps = {
   /** Teams + effective-dated memberships (FR-ADM-01..05). */
   teamsRepo: TeamsRepo;
   membershipsRepo: MembershipsRepo;
+  /** §5 dynamic configuration (FR-SET-01..06, §10.6 config rows). */
+  configRepo: ConfigRepo;
   audit: AuditPort;
   isTeamSupervisor(userId: string, teamId: string): Promise<boolean>;
   /** §10.7 health probe: one DB round-trip. */
@@ -42,26 +47,33 @@ export type AppDeps = {
   exposeDocs?: boolean;
 };
 
-export function createApp(deps: AppDeps) {
-  const service = createAuthService({
+/** The §10.1 service composition over the injected ports — module-level
+ * so createApp stays inside the §9.3 function budget. */
+function buildServices(deps: AppDeps) {
+  const auth = createAuthService({
     repo: deps.repo,
     lockout: createMemoryLockoutStore(),
     audit: deps.audit,
     idleMinutes: deps.idleMinutes,
   });
-  const usersService = createUsersService({
-    repo: deps.usersRepo,
-    audit: deps.audit,
-  });
-  const teamsService = createTeamsService({
-    teams: deps.teamsRepo,
-    memberships: deps.membershipsRepo,
-    users: deps.usersRepo,
-    audit: deps.audit,
-  });
+  return {
+    auth,
+    users: createUsersService({ repo: deps.usersRepo, audit: deps.audit }),
+    teams: createTeamsService({
+      teams: deps.teamsRepo,
+      memberships: deps.membershipsRepo,
+      users: deps.usersRepo,
+      audit: deps.audit,
+    }),
+    config: createConfigService({ repo: deps.configRepo, audit: deps.audit }),
+  };
+}
+
+export function createApp(deps: AppDeps) {
+  const service = buildServices(deps);
   /** Guard deps shared by every route plugin (§10.2). */
   const guardDeps = {
-    resolveSession: service.resolveSession,
+    resolveSession: service.auth.resolveSession,
     isTeamSupervisor: deps.isTeamSupervisor,
   };
   return new Elysia({ name: "sharq-api" })
@@ -91,14 +103,20 @@ export function createApp(deps: AppDeps) {
     })
     .use(
       createAuthRoutes({
-        service,
+        service: service.auth,
         isTeamSupervisor: deps.isTeamSupervisor,
         secureCookies: deps.secureCookies ?? false,
         authRateLimitMax: deps.rateLimit?.authPerMinute ?? 10,
       }),
     )
-    .use(createUsersRoutes({ service: usersService, ...guardDeps }))
-    .use(createTeamsRoutes({ service: teamsService, ...guardDeps }))
+    .use(createUsersRoutes({ service: service.users, ...guardDeps }))
+    .use(createTeamsRoutes({ service: service.teams, ...guardDeps }))
+    .use(
+      createConfigRoutes({
+        service: service.config,
+        resolveSession: guardDeps.resolveSession,
+      }),
+    )
     .use(createHealthRoutes({ dbCheck: deps.dbCheck }));
 }
 
