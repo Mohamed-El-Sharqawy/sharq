@@ -116,7 +116,7 @@ graph LR
 **Goal:** the core product surface — desktop grid + mobile day mode + autosave + offline outbox.
 
 - [ ] TEST: grid reducer units FIRST — full action matrix: pending overlay, selection, conflicts population, stale-settings delta, offline flips (SPEC §12; TESTING §6.3)
-- [ ] IMPL: `grid.reducer.ts` green
+- [x] IMPL: `grid.reducer.ts` green
 - [ ] TEST: hook units — `useAttendanceGrid` returns view props per scenario; `useBulkSave` optimistic + rollback + invalidation map (TESTING §6.4)
 - [ ] IMPL: `logic.ts`, `api.ts`, `queries.ts`, `mutations.ts` green (SPEC §9.4/9.6)
 - [ ] TEST: integration — bulk endpoint: per-row results, idempotency replay, window enforcement, future block, bounds/mode/reason revalidation vs current settings, period-state guards (FR-ATT-01..08/11; EC-01..05, 17/18/19, 32..35; TESTING §7)
