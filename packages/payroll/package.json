@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./config": "./src/config/index.ts"
+    "./config": "./src/config/index.ts",
+    "./periods": "./src/periods/index.ts"
   },
   "scripts": {
     "lint": "eslint .",

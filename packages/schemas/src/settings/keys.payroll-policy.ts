@@ -1,11 +1,19 @@
-import { Type } from "@sinclair/typebox";
+import { Type, type TLiteral } from "@sinclair/typebox";
 import { defineSetting } from "./types";
 
 const WEEKDAY = ["sat", "sun", "mon", "tue", "wed", "thu", "fri"] as const;
 const PAYDAY = ["sun", "mon", "tue", "wed", "thu", "fri"] as const;
 
-function literalsOf(codes: readonly string[]) {
-  return codes.map((c) => Type.Literal(c));
+// Type.Literal must see each element's LITERAL type: a plain
+// `(codes: readonly string[])` widened the registry's Static to `string`,
+// erasing the §5.2 enum contract for every consumer (caught 2026-10-22 by
+// Phase 3 row 4's period typing). The mapped tuple keeps per-key precision.
+function literalsOf<const C extends readonly string[]>(
+  codes: C,
+): { -readonly [K in keyof C]: TLiteral<C[K] & string> } {
+  return codes.map((c) => Type.Literal(c)) as {
+    -readonly [K in keyof C]: TLiteral<C[K] & string>;
+  };
 }
 
 // SPEC §5.2 — payroll.* / policy.* / deduction.* / calendar.* scalar keys.
